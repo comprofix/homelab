@@ -13,7 +13,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: dozzle
-    image: amir20/dozzle:v6.0.7
+    image: amir20/dozzle:v6.1.0
     restart_policy: always
     recreate: true
     networks:
