@@ -1,0 +1,30 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'dozzle'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: dozzle
+    image: amir20/dozzle:v6.0.7
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env:
+      DOZZLE_LEVEL: "trace"
+      DOZZLE_REMOTE_HOST: "tcp://docker.comprofix.xyz:2375,tcp://omada-server.comprofix.xyz:2375"
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

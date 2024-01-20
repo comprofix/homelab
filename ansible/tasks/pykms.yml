@@ -1,0 +1,38 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'pykms'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+  
+- name: Create the {{container_name}} container
+  docker_container:
+    name: pykms
+    image: ghcr.io/py-kms-organization/py-kms:latest
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    ports:
+      - "1688:1688"
+    env:
+      IP: "0.0.0.0"
+      SQLITE: "true"
+      HWID: "RANDOM"
+      LOGLEVEL: "INFO"
+    volumes:
+      - /mnt/nfs/docker/pykms/db:/home/py-kms/db
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      traefik.enable=true
+      traefik.http.services.{{container_name}}.loadbalancer.server.port=8080
+      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

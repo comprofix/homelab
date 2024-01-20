@@ -1,0 +1,41 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'mealie'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: mealie
+    image: ghcr.io/mealie-recipes/mealie:v1.0.0-RC2
+    restart_policy: always
+    networks:
+      - name: traefik
+    ports:
+      - 9000:9000
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+      RECIPE_PUBLIC: "true"
+      RECIPE_SHOW_NUTRITION: "false"
+      RECIPE_SHOW_ASSETS: "true"
+      RECIPE_LANDSCAPE_VIEW: "true"
+      RECIPE_DISABLE_COMMENTS: "true"
+      RECIPE_DISABLE_AMOUNT: "true"
+      BASE_URL: https://mealie.comprofix.xyz
+      SMTP_HOST: comprofix-com.mail.protection.outlook.com
+    volumes:
+      - /mnt/nfs/docker/mealie/data/:/app/data
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

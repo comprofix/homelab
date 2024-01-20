@@ -1,0 +1,29 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'mariadb'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+  
+- name: Create the {{container_name}} container
+  docker_container:
+    name: mariadb
+    image: ghcr.io/linuxserver/mariadb:10.11.5
+    restart_policy: always
+    recreate: true
+    ports:
+      - 3306:3306
+    env:
+      PUID: "0"
+      PGID: "0"
+      MYSQL_ROOT_PASSWORD: "{{MYSQL_ROOT_PASSWORD}}"
+      TZ: "Australia/Brisbane"
+    volumes:
+      - /mnt/nfs/docker/mariadb/config:/config
+    

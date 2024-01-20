@@ -1,0 +1,35 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'osticket'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+  
+- name: Create the {{container_name}} container
+  docker_container:
+    name: osticket
+    image: osticket
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    env:
+      MYSQL_HOST: "{{MYSQL_HOST}}"
+      MYSQL_DATABASE: "{{OST_DATABASE}}"
+      MYSQL_USER: "{{OST_USER}}"
+      MYSQL_PASSWORD: "{{OST_PASSWORD}}"
+
+    labels:
+      com.centurylinklabs.watchtower.enable=false
+      traefik.enable=true
+      traefik.http.services.{{container_name}}.loadbalancer.server.port=80
+      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http
+      traefik.http.routers.{{container_name}}.rule=Host(`helpdesk.comprofix.com`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

@@ -1,0 +1,41 @@
+---
+# vars file for vim
+- name: Update cache
+  apt:
+    force_apt_get: yes
+    update_cache: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+
+- name: Update all packages to their latest version
+  apt:
+    name: "*"
+    force_apt_get: yes
+    state: latest
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+
+- name: Upgrade all packages on servers
+  apt: 
+    upgrade: dist
+    force_apt_get: yes
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+
+- name: Install required packages
+  package:
+    name: "{{ install_packages }}"
+    state: present
+  become: yes
+  tags:
+    - install_packages
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+
+- name: Remove /usr/lib/python3.11/EXTERNALLY-MANAGED
+  file:
+    path: /usr/lib/python3.11/EXTERNALLY-MANAGED
+    state: absent
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+

@@ -1,0 +1,63 @@
+---
+# These are the basic variables to get started. Add additional variables for secrets as needed for tasks.
+
+ansible_user: root
+install_packages: # Add addition packages here
+  - vim-nox
+  - git
+  - zsh
+  - curl
+  - wget
+  - apt-transport-https
+  - ca-certificates
+  - gnupg2
+  - python3
+  - python3-pip
+  - nfs-common
+docker_edition: 'ce'
+docker_packages:
+  - "docker-{{ docker_edition }}"
+  - "docker-{{ docker_edition }}-cli"
+  - "docker-{{ docker_edition }}-rootless-extras"
+  - "containerd.io"
+  - "docker"
+  - "docker-compose-plugin"
+# Docker repo URL.
+docker_url: https://download.docker.com/linux
+docker_apt_repository: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/docker.asc] {{docker_url}}/{{ ansible_distribution | lower}} {{ansible_distribution_release}} stable"
+docker_apt_ignore_key_error: true
+docker_apt_gpg_key: "{{ docker_url }}/{{ ansible_distribution | lower }}/gpg"
+docker_apt_gpg_key_checksum: "sha256:1500c1f56fa9e26b9b8f42452a553675796ade0807cdce11975eb98170b3a570"
+docker_apt_filename: "docker"
+# A list of users who will be added to the docker group.
+docker_users: [administrator] # CHANGE_ME!!! - Add addition users.
+# Docker daemon options as a dict
+docker_daemon_options: {} 
+docker_configs: "/mnt/nfs/docker" # CHANGE_ME!!! - Change to the folder where you docker volume data lives.
+
+# Proxmox API variables
+api_host: "{{ ansible_host }}" 
+api_user: root@pam # CHANGE_ME!!!
+api_password: {{api_password}} # CHANGE_ME!!! - Set login password
+api_token_id: ansible 
+api_token_secret: 9e2e91bc-ec7b-4412-8105-228be73320fd # CHANGE_ME!!! - Set Token Secret.
+
+# Proxmox node target
+node_target: pve1
+
+# VM storage target
+storage_target: storage0 # CHANGE_ME!!! - Set storage target name
+
+
+# cloud-init configuration
+ci_user: administrator # CHANGE_ME!!! - Set Cloud-init username
+ci_password: 
+
+traefik_domain: "{{traefik_comain}}" # CHANGE_ME!!! - set traefik domain for FQDN.
+traefik_log_level: "WARNING"
+traefik_accesslog_enable: false
+
+CF_API_EMAIL: me@here.com # CHANGE_ME!!! - Set Cloudflare email address
+CF_DNS_API_TOKEN: XXXX # CHANGE_ME!!! - Set Cloudflare Token
+
+GOTIFY_TOKEN: XXXX # CHANGE_ME!!! - Set Gotify Token

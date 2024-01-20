@@ -1,0 +1,89 @@
+http:
+ #region routers 
+  routers:
+    proxmox:
+      entryPoints:
+        - "https"
+      rule: "Host(`jellyfin.comprofix.xyz`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: jellyfin
+        
+    omada:
+      entryPoints:
+        - "https"
+      rule: "Host(`omada.comprofix.xyz`)"
+      middlewares:
+        - mid-omada-headers
+      tls: {}
+      service: omada
+    
+    gitlab:
+      entryPoints:
+        - "https"
+      rule: "Host(`gitlab.comprofix.com`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: gitlab
+
+    registry.gitlab:
+      entryPoints:
+        - "https"
+      rule: "Host(`registry.gitlab.comprofix.com`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: gitlab
+
+  services:
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://jellyfin-svr.comprofix.xyz:8096/"
+        passHostHeader: true
+    omada:
+      loadBalancer:
+        servers:
+          - url: "https://omada-server.comprofix.xyz:8043/"
+        passHostHeader: true
+    gitlab:
+      loadBalancer:
+        servers:
+          - url: "https://10.10.10.6"
+        passHostHeader: true
+    registry.gitlab:
+      loadBalancer:
+        servers:
+          - url: "https://10.10.10.6"
+        passHostHeader: true
+
+  middlewares:
+    https-redirectscheme:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    default-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    mid-omada-headers:
+      headers:
+        customRequestHeaders:
+          host: "omada.comprofix.xyz"
+        customResponseHeaders:
+          host: "omada.comprofix.xyz"

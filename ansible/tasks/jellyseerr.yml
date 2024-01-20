@@ -1,0 +1,32 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'jellyseerr'
+    
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+  
+- name: Create the {{container_name}} container
+  docker_container:
+    name: jellyseerr
+    image: fallenbagel/jellyseerr:1.7.0 
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+    volumes:
+      - /mnt/nfs/docker/jellyseerr/config:/app/config 
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

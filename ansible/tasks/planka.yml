@@ -1,0 +1,48 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'planka'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+  
+- name: Create the {{container_name}} container
+  docker_container:
+    name: planka
+    image: ghcr.io/plankanban/planka:1.15.3
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    env:
+      BASE_URL: "https://planka.comprofix.xyz"
+      DATABASE_URL: postgresql://postgres@docker.comprofix.xyz/planka
+      SECRET_KEY: "notsecretkey"
+    volumes:
+      - /mnt/nfs/docker/planka/user-avatars:/app/public/user-avatars
+      - /mnt/nfs/docker/planka/project-background-images:/app/public/project-background-images
+      - /mnt/nfs/docker/planka/attachments:/app/public/attachments
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: postgresql
+    image: postgres:14-alpine
+    restart_policy: always
+    recreate: true
+    ports:
+      - 5432:5432
+    env:
+      POSTGRES_DB: "planka"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    volumes:
+      - /mnt/nfs/docker/planka/db-data:/var/lib/postgresql/data

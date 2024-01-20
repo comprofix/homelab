@@ -1,0 +1,39 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'speedtest'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: speedtest
+    image: ghcr.io/alexjustesen/speedtest-tracker:v0.14.3
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      DB_CONNECTION: "mysql"
+      DB_HOST: "{{ MYSQL_HOST }}"
+      DB_PORT: "3306"
+      DB_DATABASE: "{{ST_DATABASE}}"
+      DB_USERNAME: "{{ST_DB_USERNAME}}"
+      DB_PASSWORD: "{{ST_DB_PASSWORD}}"
+      TZ: "Australia/Brisbane"
+    volumes:
+      - /mnt/nfs/docker/speedtest/config:/config
+      - /mnt/nfs/docker/speedtest/web:/etc/ssl/web
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

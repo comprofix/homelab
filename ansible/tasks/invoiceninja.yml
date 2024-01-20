@@ -1,0 +1,96 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'invoiceninja'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+
+- name: "create stack.env"
+  copy:
+    dest: "/mnt/nfs/docker/invoiceninja/stack.env"
+    content: |
+      APP_NAME="Invoice Ninja"
+      APP_ENV=production
+      APP_KEY="{{ IN_APP_KEY }}"
+      APP_DEBUG=false
+      APP_URL="{{ IN_APP_URL }}"
+      REQUIRE_HTTPS=true
+      TRUSTED_PROXIES='*'
+      SESSION_ENCRYPT=false
+      SESSION_SECURE=false
+      DB_CONNECTION="mysql"
+      MULTI_DB_ENABLED=false
+      DB_HOST="{{MYSQL_HOST}}"
+      DB_DATABASE="{{IN_DB_DATABASE}}"
+      DB_USERNAME="{{IN_DB_USERNAME}}"
+      DB_PASSWORD="{{IN_DB_PASSWORD}}"
+      DB_PORT="3306"
+      DEMO_MODE=false
+      BROADCAST_DRIVER=log
+      LOG_CHANNEL=stack
+      CACHE_DRIVER=file
+      #QUEUE_CONNECTION=sync
+      QUEUE_CONNECTION=database
+      SESSION_DRIVER=file
+      SESSION_LIFETIME=120
+      REDIS_HOST=127.0.0.1
+      REDIS_PASSWORD=null
+      REDIS_PORT=6379
+      MAIL_MAILER="smtp"
+      MAIL_HOST="{{MAIL_HOST}}"
+      MAIL_PORT="{{MAIL_PORT}}"
+      MAIL_ENCRYPTION="tls"
+      MAIL_FROM_ADDRESS="{{MAIL_FROM}}"
+      MAIL_FROM_NAME="{{MAIL_FROM_NAME}}"
+      POSTMARK_API_TOKEN=
+      GOOGLE_MAPS_API_KEY=
+      ERROR_EMAIL=
+      NINJA_ENVIRONMENT="selfhost"
+      #options - snappdf / phantom / hosted_ninja
+      PDF_GENERATOR=hosted_ninja
+      PHANTOMJS_KEY='a-demo-key-with-low-quota-per-ip-address'
+      PHANTOMJS_SECRET=secret
+      UPDATE_SECRET=secret
+      SENTRY_LARAVEL_DSN=https://32f01ea994744fa08a0f688769cef78a@sentry.invoicing.co/ 
+
+- name: Create the invoiceninja-nginx container
+  docker_container:
+    name: invoiceninja-nginx
+    image: nginx:1.24.0
+    env_file: /mnt/nfs/docker/invoiceninja/stack.env
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    volumes:
+      - /mnt/nfs/docker/invoiceninja/config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf
+      - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
+      - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`invoice.comprofix.com`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+      traefik.http.services.{{container_name}}.loadbalancer.server.port=80
+      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http
+
+- name: Create the invoiceninja-app container
+  docker_container:
+    name: invoiceninja-app
+    image: invoiceninja/invoiceninja:5
+    env_file: /mnt/nfs/docker/invoiceninja/stack.env
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    volumes:
+      - /mnt/nfs/docker/invoiceninja/config/hosts:/etc/hosts
+      - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
+      - /mnt/nfs/docker/invoiceninja/docker/pp/storage:/var/www/app/storage
+    

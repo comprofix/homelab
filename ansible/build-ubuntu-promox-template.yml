@@ -1,0 +1,77 @@
+---
+- hosts: proxmox
+  become: yes
+
+  tasks:
+    - name: Download cloud-init image
+      register: image
+      ansible.builtin.get_url:
+        url: "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+        dest: /tmp/jammy-server-cloudimg-amd64.qcow2
+        mode: '0644'
+        force: true
+
+    - name: Install Tools
+      ansible.builtin.apt:
+        name:
+          - libguestfs-tools
+          - python3
+          - python3-pip
+          - python3-proxmoxer
+        update_cache: true
+        install_recommends: false
+        state: present
+    
+    - name: Install Tools to cloud-init image
+      ansible.builtin.shell: |
+        virt-customize -a {{ image.dest }} --install qemu-guest-agent
+        virt-customize -a {{ image.dest }} --install vim
+        virt-customize -a {{ image.dest }} --install git
+  
+    - name: Create new VM template from cloud-init image
+      community.general.proxmox_kvm:
+        api_host: "{{ api_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        node: "{{ node_target }}"
+        name: "jammy-server-cloudimg-amd64"
+        agent: "enabled=1"
+        bios: ovmf
+        boot: 'order=scsi0'
+        cores: 4
+        sockets: 1
+        machine: q35
+        memory: 4096
+        ostype: "l26"
+        efidisk0:
+          storage: "{{ storage_target }}"
+          format: raw
+          efitype: 4m
+          pre_enrolled_keys: 1
+        serial:
+          serial0: 'socket'
+        vga: serial0
+        scsihw: 'virtio-scsi-pci'
+        scsi:
+          scsi0: "{{ storage_target }}:0,iothread=1,discard=on,import-from={{ image.dest }},format=qcow2"
+        ide:
+          ide2: "{{ storage_target }}:cloudinit,format=raw"
+        net:
+          net0: 'virtio,bridge=vmbr0,firewall=1,tag=10'
+        ipconfig:
+          ipconfig0: 'ip=dhcp'
+        ciuser: "{{ ci_user }}"
+        sshkeys: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDfuR45VZdCGKRfr9qaqOSSjrFu7ggOpgIU3DEc3zdAyt+sVnFjY1mBu2llJgZnJcgQ7hTCwI42zbWf16P+Muqm/4s4dk0FKKJ24UH9f1pWUFvGCmm/fTINinCx34bwGlKG7kuPDEExKjskaUY/o75sQA87FxSXrCdEDVdF0addY19hW+F0/X9j4odwETJvLrLVxvx8KpzdSQuwB4apcY/dwcPCOxaNF0nfTbg+OWc/waTVhlB7HDiB/K8KGv16eL/4TpEtkt7S26p4rUf4cz0cRmt5XWkVfXThs/jBSfYMr/QXddSS+o/Y0hMdju4yuQfOU26i8XT2xxT9hUPjGXAgbPgzP5mksIoj11DhJYyRaTeB5EaI6XOFImgUzk00nOeLuBsoPFtfEQXVyZnla6U06DFQcVdtV9aszYC7mtUNJX8lB/w3IxkaHY/l/pJExuON2hq/5rI5LI6gVxJosSs9d6YT04lRGOAUmQKV8BufhbTItNO2tQaDvGed4sH7wkU= administrator@localhost"
+        template: true
+        timeout: 600
+        vmid: 10001
+    
+    - name: Grow existing disk
+      community.general.proxmox_disk:
+        api_host: "{{ api_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        vmid: 10001
+        disk: scsi0
+        size: +38G
+        state: resized
