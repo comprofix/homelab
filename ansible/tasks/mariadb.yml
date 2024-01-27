@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: mariadb
-    image: ghcr.io/linuxserver/mariadb:10.11.5
+    image: ghcr.io/linuxserver/mariadb:10.11.6
     restart_policy: always
     recreate: true
     ports:
