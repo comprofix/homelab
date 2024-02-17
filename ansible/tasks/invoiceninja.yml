@@ -62,7 +62,7 @@
 - name: Create the invoiceninja-nginx container
   docker_container:
     name: invoiceninja-nginx
-    image: nginx:1.25.3
+    image: nginx:1.25.4
     env_file: /mnt/nfs/docker/invoiceninja/stack.env
     restart_policy: always
     recreate: true
