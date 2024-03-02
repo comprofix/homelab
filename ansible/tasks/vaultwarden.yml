@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: vaultwarden
-    image: vaultwarden/server:1.30.3
+    image: vaultwarden/server:1.30.5
     restart_policy: always
     recreate: true
     networks:
