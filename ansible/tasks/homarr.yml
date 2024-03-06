@@ -16,7 +16,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: homarr
-    image: ghcr.io/ajnart/homarr:0.14.6
+    image: ghcr.io/ajnart/homarr:0.15.0
     restart_policy: always
     recreate: true
     networks:
