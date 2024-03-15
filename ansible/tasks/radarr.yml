@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: radarr
-    image: lscr.io/linuxserver/radarr:5.2.6
+    image: linuxserver/radarr:5.2.6
     restart_policy: always
     recreate: true
     networks:
