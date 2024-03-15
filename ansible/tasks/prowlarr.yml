@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:1.11.4
+    image: linuxserver/prowlarr:1.11.4
     restart_policy: always
     recreate: true
     networks:
