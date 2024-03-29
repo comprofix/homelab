@@ -95,6 +95,10 @@
     - name: Deploy planka
       import_tasks: tasks/planka.yml
       tags: planka_install
+    
+    - name: Deploy homepage
+      import_tasks: tasks/homepage.yml
+      tags: homepage_install
 
 #     - name: Deploy osTicket
 #       import_tasks: tasks/osticket.yml
@@ -107,10 +111,6 @@
     - name: Deploy Homarr
       import_tasks: tasks/homarr.yml
       tags: homarr_install
-
-    - name: Deploy Dashdot
-      import_tasks: tasks/dashdot.yml
-      tags: dashdot_install
 
 - hosts: omada
   become: yes
