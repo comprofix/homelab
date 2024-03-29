@@ -1,7 +1,7 @@
 ---
 - name: Set Facts
   set_fact:
-    container_name: 'dashdot'
+    container_name: 'homepage'
 
 - name: Create directories
   file:
@@ -13,17 +13,17 @@
   
 - name: Create the {{container_name}} container
   docker_container:
-    name: dash
-    image: mauricenino/dashdot:5
-    privileged: yes
+    name: homepage
+    image: ghcr.io/gethomepage/homepage:v0.8.10
     restart_policy: always
     recreate: true
     networks:
       - name: traefik
     volumes:
-      - /:/mnt/host:ro
+      - /mnt/nfs/docker/homepage/config:/app/config 
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
     labels:
       traefik.enable=true
       traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
       traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare   
