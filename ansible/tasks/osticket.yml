@@ -10,21 +10,22 @@
   with_items:
     - "{{ docker_configs }}/{{container_name}}"
     - "{{ docker_configs }}/{{container_name}}/config"
-  
+
 - name: Create the {{container_name}} container
   docker_container:
     name: osticket
-    image: osticket
+    image: devinsolutions/osticket:1.17.5
     restart_policy: always
     recreate: true
     networks:
       - name: traefik
     env:
+      SMTP_HOST: comprofix-com.mail.protection.outlook.com
       MYSQL_HOST: "{{MYSQL_HOST}}"
       MYSQL_DATABASE: "{{OST_DATABASE}}"
-      MYSQL_USER: "{{OST_USER}}"
-      MYSQL_PASSWORD: "{{OST_PASSWORD}}"
-
+      MYSQL_USER: "{{OST_DB_USER}}"
+      MYSQL_PASSWORD: "{{OST_DB_PASSWORD}}"
+      INSTALL_SECRET: "{{OST_SIRI}}"
     labels:
       com.centurylinklabs.watchtower.enable=false
       traefik.enable=true
@@ -33,3 +34,33 @@
       traefik.http.routers.{{container_name}}.rule=Host(`helpdesk.comprofix.com`)
       traefik.http.routers.{{container_name}}.entrypoints=https
       traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Add tzdata to osTicket container
+  community.docker.docker_container_exec:
+    container: osticket
+    command: apk add tzdata
+  
+- name: Set container Timezone
+  community.docker.docker_container_exec:
+    container: osticket
+    command: "ln -s /usr/share/zoneinfo/Australia/Brisbane /etc/localtime"
+
+- name: Set PHP Timezone
+  community.docker.docker_container_exec:
+    container: osticket
+    command: "sed -i 's|UTC|Australia/Brisbane|g' /usr/local/etc/php/conf.d/php-osticket.ini"
+
+- name: Patch mysqli.php for timezone
+  community.docker.docker_container_exec:
+    container: osticket
+    command: "sed -i 's|system_time_zone|time_zone|g' /var/www/html/include/mysqli.php"
+
+- name: Clear ost_sessions table
+  mysql_query:
+    login_host: "{{MYSQL_HOST}}"
+    login_user: "{{OST_DB_USER}}"
+    login_password: "{{OST_DB_PASSWORD}}"
+    login_db: "{{OST_DATABASE}}"
+    query: 
+      - USE comprofix_ost; 
+      - TRUNCATE TABLE ost_session;
