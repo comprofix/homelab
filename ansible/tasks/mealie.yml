@@ -18,8 +18,6 @@
     restart_policy: always
     networks:
       - name: traefik
-    ports:
-      - 9000:9000
     env:
       PUID: "1000"
       PGID: "1000"
