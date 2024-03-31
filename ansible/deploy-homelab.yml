@@ -104,13 +104,17 @@
       import_tasks: tasks/osticket.yml
       tags: osticket_install
 
+    - name: Deploy qbittorrent
+      import_tasks: tasks/qbittorrent.yml
+      tags: qbittorrent_install
+
 #     - name: Deploy homeassistant
 #       import_tasks: tasks/homeassistant.yml
 #       tags: homeassistant_install
     
-    - name: Deploy Homarr
-      import_tasks: tasks/homarr.yml
-      tags: homarr_install
+    # - name: Deploy Homarr
+    #   import_tasks: tasks/homarr.yml
+    #   tags: homarr_install
 
 - hosts: omada
   become: yes

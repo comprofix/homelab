@@ -1,0 +1,50 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'qbittorrent'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+
+- name: Download VueTorrent
+  git:
+    repo: https://github.com/VueTorrent/VueTorrent.git
+    dest: "/opt/vuetorrent"
+    clone: yes
+    update: yes
+    single_branch: yes
+    version: latest-release
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: qbittorrent
+    image: lscr.io/linuxserver/qbittorrent:4.6.4
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+      TORRENTING_PORT: "6881"
+      WEBUI_PORT: "8080"
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+    volumes:
+      - /mnt/nfs/docker/qbittorrent/config:/config
+      - /mnt/nfs/data:/data
+      - /opt/vuetorrent:/vuetorrent
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+      traefik.http.services.{{container_name}}.loadbalancer.server.port=8080
+      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http  
