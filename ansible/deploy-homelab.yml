@@ -100,9 +100,9 @@
       import_tasks: tasks/homepage.yml
       tags: homepage_install
 
-#     - name: Deploy osTicket
-#       import_tasks: tasks/osticket.yml
-#       tags: osticket_install
+    - name: Deploy osTicket
+      import_tasks: tasks/osticket.yml
+      tags: osticket_install
 
 #     - name: Deploy homeassistant
 #       import_tasks: tasks/homeassistant.yml
