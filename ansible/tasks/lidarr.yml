@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: lidarr
-    image: ghcr.io/linuxserver/lidarr:2.1.7
+    image: ghcr.io/linuxserver/lidarr:latest@sha256:a17af2d24e9982e06bc31b3b91a8334a16bfb573f652ef2e1510088c356854ba
     restart_policy: always
     recreate: true
     networks:
