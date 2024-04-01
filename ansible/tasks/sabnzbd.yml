@@ -24,7 +24,7 @@
       PGID: "1000"
       TZ: "Australia/Brisbane"
       HOSTNAME: "sabnzbd.comprofix.xyz"
-      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:sabnzbd-develop"
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:sabnzbd"
     volumes:
       - /mnt/nfs/docker/sabnzbd/config:/config
       - /mnt/nfs/data:/data

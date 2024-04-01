@@ -24,7 +24,7 @@
       PGID: "1000"
       TZ: "Australia/Brisbane"
       AUTO_UPDATE: "true" #optional
-      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:prowlarr-develop"
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:prowlarr"
     volumes:
       - /mnt/nfs/docker/prowlarr/config:/config
     labels:

@@ -50,7 +50,7 @@
     
     - name: Deploy Mealie
       import_tasks: tasks/mealie.yml
-      tags: mealie_install 
+      tags: mealie_install
 
     - name: Deploy sabnzb
       import_tasks: tasks/sabnzbd.yml

@@ -23,7 +23,7 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:radarr-develop"
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:radarr"
     volumes:
       - /mnt/nfs/docker/radarr/config:/config
       - /mnt/nfs/data:/data

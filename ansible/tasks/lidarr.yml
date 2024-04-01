@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: lidarr
-    image: linuxserver/lidarr:8.1.2135
+    image: linuxserver/lidarr:2.1.7
     restart_policy: always
     recreate: true
     networks:
@@ -24,7 +24,7 @@
       PGID: "1000"
       TZ: "Australia/Brisbane"
       AUTO_UPDATE: "true" #optional
-      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:lidarr-develop"
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:lidarr"
     volumes:
       - /mnt/nfs/docker/lidarr/config:/config
       - /mnt/nfs/data:/data

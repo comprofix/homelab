@@ -23,7 +23,7 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:readarr-develop"
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:readarr"
     volumes:
       - /mnt/nfs/docker/readarr/config:/config
       - /mnt/nfs/data/:/data
