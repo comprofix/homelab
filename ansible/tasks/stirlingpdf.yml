@@ -1,7 +1,7 @@
 ---
 - name: Set Facts
   set_fact:
-    container_name: 'lidarr'
+    container_name: 'stirlingpdf'
 
 - name: Create directories
   file:
@@ -10,11 +10,18 @@
   with_items:
     - "{{ docker_configs }}/{{container_name}}"
     - "{{ docker_configs }}/{{container_name}}/config"
-  
+
+- name: Download tessdata
+  git:
+    repo: https://github.com/tesseract-ocr/tessdata.git
+    dest: "/opt/tessdata"
+    clone: yes
+    update: yes
+
 - name: Create the {{container_name}} container
   docker_container:
-    name: lidarr
-    image: ghcr.io/linuxserver/lidarr:2.1.7
+    name: stirlingpdf
+    image: ghcr.io/stirling-tools/s-pdf:0.22.6
     restart_policy: always
     recreate: true
     networks:
@@ -23,13 +30,14 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-      AUTO_UPDATE: "true" #optional
-      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:lidarr"
+      DOCKER_ENABLE_SECURITY: "false"
+      INSTALL_BOOK_AND_ADVANCED_HTML_OPS: "false"
     volumes:
-      - /mnt/nfs/docker/lidarr/config:/config
-      - /mnt/nfs/data:/data
+      - /opt/tessdata:/usr/share/tessdata #Required for extra OCR languages
+      - /mnt/nfs/docker/stirlingpdf/configs:/configs  
     labels:
       traefik.enable=true
       traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
       traefik.http.routers.{{container_name}}.entrypoints=https
       traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+      
