@@ -111,6 +111,10 @@
     - name: Deploy Stirling PDF
       import_tasks: tasks/stirlingpdf.yml
       tags: stirlingpdf_install
+    
+    - name: Deploy Code-Server
+      import_tasks: tasks/codeserver.yml
+      tags: codeserver_install
 
 #     - name: Deploy homeassistant
 #       import_tasks: tasks/homeassistant.yml

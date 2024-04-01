@@ -1,0 +1,31 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'codeserver'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: codeserver
+    image: ghcr.io/linuxserver/code-server:4.22.1
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    volumes:
+      - /mnt/nfs/docker/codeserver/config:/config
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
