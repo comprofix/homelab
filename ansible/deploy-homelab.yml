@@ -108,6 +108,10 @@
       import_tasks: tasks/qbittorrent.yml
       tags: qbittorrent_install
 
+    - name: Deploy Stirling PDF
+      import_tasks: tasks/stirlingpdf.yml
+      tags: stirlingpdf_install
+
 #     - name: Deploy homeassistant
 #       import_tasks: tasks/homeassistant.yml
 #       tags: homeassistant_install
