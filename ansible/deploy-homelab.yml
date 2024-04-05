@@ -116,6 +116,10 @@
       import_tasks: tasks/codeserver.yml
       tags: codeserver_install
 
+    - name: Deploy PrivateBin
+      import_tasks: tasks/privatebin.yml
+      tags: privatebin_install
+
 #     - name: Deploy homeassistant
 #       import_tasks: tasks/homeassistant.yml
 #       tags: homeassistant_install
