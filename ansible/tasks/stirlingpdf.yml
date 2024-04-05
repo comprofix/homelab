@@ -11,12 +11,12 @@
     - "{{ docker_configs }}/{{container_name}}"
     - "{{ docker_configs }}/{{container_name}}/config"
 
-- name: Download tessdata
-  git:
-    repo: https://github.com/tesseract-ocr/tessdata.git
-    dest: "/opt/tessdata"
-    clone: yes
-    update: yes
+    #- name: Download tessdata
+    #git:
+    #repo: https://github.com/tesseract-ocr/tessdata.git
+    #dest: "/opt/tessdata"
+    #clone: yes
+    #update: yes
 
 - name: Create the {{container_name}} container
   docker_container:
