@@ -26,7 +26,7 @@
       AUTO_UPDATE: "true" #optional
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:lidarr"
     volumes:
-      - /mnt/nfs/docker/lidarr/config:/config
+      - /dockerdata/lidarr/config:/config
       - /mnt/nfs/data:/data
     labels:
       traefik.enable=true
