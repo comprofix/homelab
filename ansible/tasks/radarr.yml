@@ -25,7 +25,7 @@
       TZ: "Australia/Brisbane"
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:radarr"
     volumes:
-      - /mnt/nfs/docker/radarr/config:/config
+      - /dockerdata/radarr/config:/config
       - /mnt/nfs/data:/data
     labels:
       traefik.enable=true
