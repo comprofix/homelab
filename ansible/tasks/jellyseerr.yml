@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: jellyseerr
-    image: fallenbagel/jellyseerr:1.7.0 
+    image: fallenbagel/jellyseerr:1.8.0 
     restart_policy: always
     recreate: true
     networks:
