@@ -25,5 +25,6 @@ deploy:
       else
         echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
+      
   only:
     - master
