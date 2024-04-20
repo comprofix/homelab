@@ -14,8 +14,7 @@ deploy:
       echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"
       # Check if git diff command fails and exit if it does
       if ! changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
-        echo "Error: Failed to run git diff command"
-        exit 1
+        exit 0
       fi
       if [ -n "$changed_tasks" ]; then
         # Split the changed tasks into an array and iterate over them
