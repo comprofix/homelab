@@ -15,19 +15,20 @@ deploy:
       git status
       git remote -v
       git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"
+      
       # Check if git diff command fails and exit if it does
-      if ! changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
-        echo "Error: Failed to run git diff command"
-        exit 1
-      fi
-      if [ -n "$changed_tasks" ]; then
-        updated_task=$(echo "$changed_tasks" | head -n 1)  
-        echo "The following task file has been updated: $updated_task"
-        echo "Running Ansible playbook..."
-        echo "$updated_task"
-      else
-        echo "No changes detected in task files. Skipping Ansible playbook execution."
-      fi
+      # if ! changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
+      #   echo "Error: Failed to run git diff command"
+      #   exit 1
+      # fi
+      # if [ -n "$changed_tasks" ]; then
+      #   updated_task=$(echo "$changed_tasks" | head -n 1)  
+      #   echo "The following task file has been updated: $updated_task"
+      #   echo "Running Ansible playbook..."
+      #   echo "$updated_task"
+      # else
+      #   echo "No changes detected in task files. Skipping Ansible playbook execution."
+      # fi
       
   only:
     - master
