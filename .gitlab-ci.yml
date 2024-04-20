@@ -14,7 +14,7 @@ deploy:
       if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
         if git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep -q "tasks/"; then
           echo "Changes detected in tasks folder. Running Ansible playbook..."
-          tags=$(awk '/tags:/ { for (i=2; i<=NF; i++) printf "%s%s", sep, $i; sep="," }' deploy-homelab.yml | tr -d '[:space:]')
+          tags=$(awk '/tags:/ { for (i=2; i<=NF; i++) printf "%s%s", sep, $i; sep="," }' ansible/deploy-homelab.yml | tr -d '[:space:]')
           echo $tags
         else
           echo "No changes detected in tasks folder. Skipping Ansible playbook execution."
