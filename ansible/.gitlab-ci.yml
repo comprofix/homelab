@@ -3,14 +3,22 @@ stages:
 
 deploy:
   stage: deploy
+  image: python:3.9-slim # Use a base image with Python installed
+  services:
+    - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
+  variables:
+    DOCKER_DRIVER: overlay2 # Set Docker driver to overlay2
   script:
     - |
       if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
         if git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep -q "tasks/"; then
           echo "Changes detected in tasks folder. Running Ansible playbook..."
-          tags=$(awk '/tags:/ { for (i=2; i<=NF; i++) printf "%s%s", sep, $i; sep="," }' deploy-homelab.yml | tr -d '[:space:]')
-          #ansible-playbook -i inventory deploy-homelab.yml --tags "$tags"
-          echo $tags
+          docker run --rm \
+            -v $(pwd):/ansible \
+            -w /ansible \
+            ansible/ansible-runner:latest \
+            #ansible-playbook -i inventory deploy-homelab.yml --tags "$tags"
+            echo $tags
         else
           echo "No changes detected in tasks folder. Skipping Ansible playbook execution."
         fi
