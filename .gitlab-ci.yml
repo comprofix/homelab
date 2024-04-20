@@ -9,6 +9,7 @@ deploy:
   variables:
     DOCKER_DRIVER: overlay2 # Set Docker driver to overlay2
   script:
+    - apt-get update && apt-get install -y git # Install Git
     - |
       if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
         if git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep -q "tasks/"; then
