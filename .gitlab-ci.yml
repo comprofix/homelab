@@ -4,10 +4,10 @@ stages:
 deploy:
   stage: deploy
   image: debian:12 # Use a base image with Python installed
-  services:
-    - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
+  #services:
+  #  - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
   script:
-    - apt-get update && apt-get install -y git # Install Git
+    - apt-get update && apt-get install -y git ansible ansible-playbook # Install Git
     - |
       echo "CI_COMMIT_REF_NAME: $CI_COMMIT_REF_NAME"
       echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"
@@ -20,6 +20,7 @@ deploy:
         echo "The following task file has been updated: $updated_task"
         echo "Running Ansible playbook..."
         echo "$updated_task"
+
       else
          echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
