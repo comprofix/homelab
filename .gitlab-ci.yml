@@ -12,6 +12,8 @@ deploy:
       echo "CI_COMMIT_REF_NAME: $CI_COMMIT_REF_NAME"
       echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"
       echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"
+      git status
+      git remote -v
       # Check if git diff command fails and exit if it does
       if ! changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
         echo "Error: Failed to run git diff command"
