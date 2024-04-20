@@ -16,4 +16,5 @@
     "commitMessagePrefix": "chore(deps-major): ",
     "labels": ["dependencies", "breaking"]
   }
+  
 }
