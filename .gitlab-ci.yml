@@ -3,29 +3,26 @@ stages:
 
 deploy:
   stage: deploy
-  image: python:3.12-slim # Use a base image with Python installed
+  image: debian:12 # Use a base image with Python installed
   services:
     - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
-  variables:
-    DOCKER_DRIVER: overlay2 # Set Docker driver to overlay2
   script:
     - apt-get update && apt-get install -y git # Install Git
     - |
       echo "CI_COMMIT_REF_NAME: $CI_COMMIT_REF_NAME"
       echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"
       echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"
-      if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
-        changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$")
-        if [[ -n "$changed_tasks" ]]; then
-          # Extract the filename of the first modified task file
-          updated_task=$(echo "$changed_tasks" | head -n 1)
+      changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$")
+      if [[ -n "$changed_tasks" ]]; then
+        # Extract the filename of the first modified task file
+        updated_task=$(echo "$changed_tasks" | head -n 1)
           
-          echo "The following task file has been updated: $updated_task"
-          echo "Running Ansible playbook..."
-          echo $updated_task
-        else
-          echo "No changes detected in task files. Skipping Ansible playbook execution."
-        fi
+        echo "The following task file has been updated: $updated_task"
+        echo "Running Ansible playbook..."
+        echo $updated_task
       else
-        echo "Not on the master branch. Skipping Ansible playbook execution."
+        echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
+  only:
+    - master
+
