@@ -14,7 +14,6 @@ deploy:
       echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"
       changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$")
       if [[ -n "$changed_tasks" ]]; then
-        # Extract the filename of the first modified task file
         updated_task=$(echo "$changed_tasks" | head -n 1)
           
         echo "The following task file has been updated: $updated_task"
