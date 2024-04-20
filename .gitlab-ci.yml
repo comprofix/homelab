@@ -12,13 +12,19 @@ deploy:
     - apt-get update && apt-get install -y git # Install Git
     - |
       if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
-        if git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep -q "tasks/"; then
-          echo "Changes detected in tasks folder. Running Ansible playbook..."
-          tags=$(awk '/tags:/ { for (i=2; i<=NF; i++) printf "%s%s", sep, $i; sep="," }' ansible/deploy-homelab.yml | tr -d '[:space:]')
-          echo $tags
+        changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$")
+        
+        if [[ -n "$changed_tasks" ]]; then
+          # Extract the filename of the first modified task file
+          updated_task=$(echo "$changed_tasks" | head -n 1)
+          
+          echo "The following task file has been updated: $updated_task"
+          echo "Running Ansible playbook..."
+          echo $updated_task
         else
-          echo "No changes detected in tasks folder. Skipping Ansible playbook execution."
+          echo "No changes detected in task files. Skipping Ansible playbook execution."
         fi
       else
         echo "Not on the master branch. Skipping Ansible playbook execution."
+        
       fi
