@@ -13,17 +13,13 @@ deploy:
       echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"
       echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"
       # Check if git diff command fails and exit if it does
-      if ! changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
-        exit 0
-      fi
-      if [ -n "$changed_tasks" ]; then
+      if changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
         # Split the changed tasks into an array and iterate over them
         IFS=$'\n' read -r -d '' -a tasks_array <<< "$changed_tasks"
         for task in "${tasks_array[@]}"; do
-          echo "The following task file has been updated: $task"
-          echo "Running Ansible playbook for $task..."
-          # Add your Ansible playbook execution command here for each task
-        done
+        echo "The following task file has been updated: $task"
+        echo "Running Ansible playbook for $task..."
+        # Add your Ansible playbook execution command here for each task
       else
         echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
