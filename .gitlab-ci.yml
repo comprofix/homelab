@@ -7,7 +7,7 @@ deploy:
   #services:
   #  - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
   script:
-    - apt-get update && apt-get install -y git ansible ansible-playbook # Install Git
+    - apt-get update && apt-get install -y git ansible # Install Git
     - |
       echo "CI_COMMIT_REF_NAME: $CI_COMMIT_REF_NAME"
       echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"
