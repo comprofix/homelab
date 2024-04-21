@@ -24,6 +24,7 @@ deploy:
         chmod 644 ~/.ssh/known_hosts
         eval $(ssh-agent -s)
         ssh-add <(echo "$SSH_PRIVATE_KEY")
+        chmod 700 $(pwd)
         cd ansible
         ansible-playbook -i inventory deploy-homelab.yml --tags $tags
       else
