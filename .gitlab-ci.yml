@@ -17,7 +17,7 @@ deploy:
   #  - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
   script:
     - |
-      #if changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
+      if changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
         updated_task=$(echo "$changed_tasks" | head -n 1)  
         echo "The following task file has been updated: $updated_task"
         echo "Running Ansible playbook..."
@@ -27,9 +27,9 @@ deploy:
         ssh -oStrictHostKeyChecking=no -T root@vps01.comprofix.com
         #cd ansible
         #ansible-playbook deploy-homelab.yml --tags $tags
-      #else
-      #   echo "No changes detected in task files. Skipping Ansible playbook execution."
-      #fi
+      else
+         echo "No changes detected in task files. Skipping Ansible playbook execution."
+      fi
 
   only:
     - master
