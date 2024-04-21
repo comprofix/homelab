@@ -3,30 +3,28 @@ stages:
 
 deploy:
   stage: deploy
-  image: debian:12 # Use a base image with Python installed
+  image: alpine:latest # Use a base image with Python installed
+  before_script:
+    - apk add --no-cache git
+    - mkdir ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+  script:
   #services:
   #  - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
   script:
-    - apt-get update && apt-get install -y git ansible # Install Git
     - |
-      # echo "CI_COMMIT_REF_NAME: $CI_COMMIT_REF_NAME"
-      # echo "CI_COMMIT_BEFORE_SHA: $CI_COMMIT_BEFORE_SHA"
-      # echo "CI_COMMIT_SHA: $CI_COMMIT_SHA"
-      # Check if git diff command fails and exit if it does
       if changed_tasks=$(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/tasks/.*\.yml$"); then
         updated_task=$(echo "$changed_tasks" | head -n 1)  
         echo "The following task file has been updated: $updated_task"
         echo "Running Ansible playbook..."
         basename=$(basename $updated_task)
         tags=${basename%.*}_install
-        mkdir ~/.ssh
-        echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-        chmod 644 ~/.ssh/known_hosts
-        eval $(ssh-agent -s)
-        ssh-add <(echo "$SSH_PRIVATE_KEY")
         chmod 700 ansible
         cd ansible
-        ansible-playbook -i inventory deploy-homelab.yml --tags $tags
+        ansible-playbook deploy-homelab.yml --tags $tags
       else
          echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
