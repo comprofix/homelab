@@ -4,8 +4,6 @@ stages:
 deploy:
   stage: deploy
   image: debian:12 # Use a base image with Python installed
-    name: debian
-    pull_policy: if-not-present # available: always, if-not-present, never
   #services:
   #  - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
   script:
