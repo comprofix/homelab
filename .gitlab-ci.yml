@@ -12,6 +12,8 @@ deploy:
     - chmod 644 ~/.ssh/known_hosts
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - echo "HOST *" > ~/.ssh/config
+    - echo "StrictHostKeyChecking no" >> ~/.ssh/config
   script:
   #services:
   #  - docker:dind # Enable Docker service for running Docker commands within GitLab CI/CD
