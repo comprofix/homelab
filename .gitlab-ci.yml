@@ -27,7 +27,8 @@ deploy:
         tags=${basename%.*}_install
         chmod 700 ansible
         cd ansible
-        ansible-playbook deploy-homelab.yml --tags $tags
+        echo $ANSIBLE_VAULT_PASSWORD > .vault_password.txt
+        ansible-playbook deploy-homelab.yml --tags $tags --vault-password-file .vault_password.txt
       else
          echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi

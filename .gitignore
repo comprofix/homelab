@@ -1,7 +1,6 @@
 terraform.auto.tfvars
 .terraform
 .terraform.lock.hcl
-all.yml
 .tfstate
 tokens.txt
 
