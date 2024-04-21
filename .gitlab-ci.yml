@@ -18,7 +18,7 @@ deploy:
         echo "The following task file has been updated: $updated_task"
         echo "Running Ansible playbook..."
         basename=$(basename $updated_task)
-        tags=$(echo $basename + "_install")
+        tags=${basename%.*}_install
         echo "ansible-playbook -i inventory ansible/deploy-homelab --tags $tags"
 
       else
