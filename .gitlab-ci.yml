@@ -25,9 +25,7 @@ deploy:
         eval $(ssh-agent -s)
         ssh-add <(echo "$SSH_PRIVATE_KEY")
         cd ansible
-        ssh -T administrator@docker.comprofix.xyz
-        # ansible-playbook -i inventory deploy-homelab.yml --tags $tags"
-
+        ansible-playbook -i inventory deploy-homelab.yml --tags $tags
       else
          echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
