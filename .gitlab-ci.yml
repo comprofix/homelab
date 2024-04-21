@@ -19,7 +19,14 @@ deploy:
         echo "Running Ansible playbook..."
         basename=$(basename $updated_task)
         tags=${basename%.*}_install
-        echo "ansible-playbook -i inventory ansible/deploy-homelab --tags $tags"
+        mkdir ~/.ssh
+        echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+        eval $(ssh-agent -s)
+        ssh-add <(echo "$SSH_PRIVATE_KEY")
+        cd ansible
+        ssh -T administrator@docker.comprofix.xyz
+        # ansible-playbook -i inventory deploy-homelab.yml --tags $tags"
 
       else
          echo "No changes detected in task files. Skipping Ansible playbook execution."
