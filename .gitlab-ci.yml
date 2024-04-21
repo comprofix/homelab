@@ -24,8 +24,9 @@ deploy:
         basename=$(basename $updated_task)
         tags=${basename%.*}_install
         chmod 700 ansible
-        cd ansible
-        ansible-playbook deploy-homelab.yml --tags $tags
+        ssh -T root@vps01.comprofix.com
+        #cd ansible
+        #ansible-playbook deploy-homelab.yml --tags $tags
       else
          echo "No changes detected in task files. Skipping Ansible playbook execution."
       fi
