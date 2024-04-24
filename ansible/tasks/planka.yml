@@ -21,7 +21,7 @@
       - name: traefik
     env:
       BASE_URL: "https://planka.comprofix.xyz"
-      DATABASE_URL: postgresql://postgres@docker.comprofix.xyz/planka
+      DATABASE_URL: postgresql://postgres@postgresql-planka/planka
       SECRET_KEY: "notsecretkey"
     volumes:
       - /mnt/nfs/docker/planka/user-avatars:/app/public/user-avatars
@@ -35,14 +35,15 @@
 
 - name: Create the {{container_name}} container
   docker_container:
-    name: postgresql
+    name: postgresql-planka
     image: postgres:14-alpine
     restart_policy: always
     recreate: true
-    ports:
-      - 5432:5432
+    networks:
+      - name: traefik
     env:
       POSTGRES_DB: "planka"
       POSTGRES_HOST_AUTH_METHOD: "trust"
     volumes:
       - /mnt/nfs/docker/planka/db-data:/var/lib/postgresql/data
+
