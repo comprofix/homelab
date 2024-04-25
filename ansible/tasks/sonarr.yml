@@ -25,7 +25,7 @@
       TZ: "Australia/Brisbane"
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:sonarr"
     volumes:
-      - /dockerdata/sonarr/config:/config
+      - /mnt/nfs/docker/sonarr/config/:/config
       - /mnt/nfs/data:/data
     labels:
       traefik.enable=true
