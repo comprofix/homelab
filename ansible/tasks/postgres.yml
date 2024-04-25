@@ -1,0 +1,26 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'postgres'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: postgres
+    image: postgres:16-alpine
+    restart_policy: always
+    recreate: true
+    ports:
+      - 5432:5432
+    env:
+      POSTGRES_PASSWORD: "{{POSTGRES_PASSWORD}}"
+    volumes:
+      - /mnt/nfs/docker/postgres/db-data:/var/lib/postgresql/data
+

@@ -32,6 +32,10 @@
       import_tasks: tasks/mariadb.yml
       tags: mariadb_install
 
+    - name: Deploy Postgres
+      import_tasks: tasks/postgres.yml
+      tags: postgres_install
+
     - name: "Deploy Traefik"
       import_tasks: tasks/traefik.yml
       tags: traefik_install
