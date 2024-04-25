@@ -26,7 +26,7 @@
       AUTO_UPDATE: "true" #optional
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:prowlarr"
     volumes:
-      - /dockerdata/prowlarr/config:/config
+      - /mnt/nfs/docker/prowlarr/config:/config
     labels:
       traefik.enable=true
       traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
