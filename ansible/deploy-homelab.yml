@@ -128,10 +128,6 @@
 #       import_tasks: tasks/homeassistant.yml
 #       tags: homeassistant_install
     
-    # - name: Deploy Homarr
-    #   import_tasks: tasks/homarr.yml
-    #   tags: homarr_install
-
 - hosts: omada
   become: yes
 
