@@ -24,7 +24,8 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-      NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: "imagick soap"
+      OVERWRITEPROTOCOL: https
+      OVERWRITECLIURL: https://nextcloud.comprofix.xyz/
     labels:
       traefik.enable=true
       traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
