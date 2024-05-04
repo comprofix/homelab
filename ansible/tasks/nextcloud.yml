@@ -1,0 +1,53 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'nextcloud'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: nextcloud
+    image: nextcloud:28.0
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    volumes:
+      - /mnt/nfs/docker/nextcloud/html:/var/www/html
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+      NEXTCLOUD_ADDITIONAL_PHP_EXTENSIONS: "imagick soap"
+    labels:
+      traefik.enable=true
+      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.entrypoints=https
+      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Update apt cache
+  community.docker.docker_container_exec:
+    container: nextcloud
+    command: apt-get update
+
+- name: Install libxml++2.6-dev packages
+  community.docker.docker_container_exec:
+    container: nextcloud
+    command: apt-get install libxml++2.6-dev -y
+
+
+- name: Install soap PHP extension
+  community.docker.docker_container_exec:
+    container: nextcloud
+    command: docker-php-ext-install soap
+
+- name: Restart {{container_name}} container
+  docker_container:
+    name: nextcloud
+    restart: true

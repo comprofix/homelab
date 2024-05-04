@@ -124,6 +124,10 @@
       import_tasks: tasks/privatebin.yml
       tags: privatebin_install
 
+    - name: Deploy Nextcloud
+      import_tasks: tasks/nextcloud.yml
+      tags: nextcloud_install
+
 #     - name: Deploy homeassistant
 #       import_tasks: tasks/homeassistant.yml
 #       tags: homeassistant_install
