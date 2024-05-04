@@ -11,13 +11,6 @@
     - "{{ docker_configs }}/{{container_name}}"
     - "{{ docker_configs }}/{{container_name}}/config"
 
-- name: Getting Dashboard Icons
-  git:
-    repo: https://github.com/walkxcode/dashboard-icons.git
-    dest: "/opt/dashboard-icons"
-    clone: yes
-    update: yes
-  
 - name: Create the {{container_name}} container
   docker_container:
     name: homepage
@@ -26,6 +19,8 @@
     recreate: true
     networks:
       - name: traefik
+    env:
+      LOG_LEVEL: debug
     volumes:
       - /mnt/nfs/docker/homepage/config:/app/config 
       - /opt/dashboard-icons:/app/public/icons

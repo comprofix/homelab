@@ -123,14 +123,6 @@
     - name: Deploy PrivateBin
       import_tasks: tasks/privatebin.yml
       tags: privatebin_install
-
-    - name: Deploy Nextcloud
-      import_tasks: tasks/nextcloud.yml
-      tags: nextcloud_install
-
-#     - name: Deploy homeassistant
-#       import_tasks: tasks/homeassistant.yml
-#       tags: homeassistant_install
     
 - hosts: omada
   become: yes
@@ -139,3 +131,4 @@
     - name: Deploy Omada
       import_tasks: tasks/omada.yml
       tags: omada_install
+
