@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: readarr
-    image: linuxserver/readarr:develop@sha256:6a17b22fe6b3c47e420c0ba400dc9c888b08a885fc1e0ed45eb061b5f5116e83
+    image: linuxserver/readarr:develop@sha256:26eec98782dfddb3ca374c60b8ab5d19b406114ee765a5264747c2dd40e66be9
     restart_policy: always
     recreate: true
     networks:
