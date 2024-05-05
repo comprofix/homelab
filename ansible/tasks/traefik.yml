@@ -87,3 +87,12 @@
       traefik.http.routers.dashboard.tls.domains[1].sans=*.comprofix.com
       traefik.http.routers.dashboard.tls.domains[2].main=gitlab.comprofix.com
       traefik.http.routers.dashboard.tls.domains[3].main=registry.gitlab.comprofix.com
+      traefik.http.middlewares.traefik-auth.basicauth.users={{TRAEFIK_CREDENTIALS}}
+      traefik.http.routers.dashboard.middlewares=traefik-auth
+      # traefik.http.routers.traefik.entrypoints=http
+      # traefik.http.routers.traefik.rule=Host(`traefik.{{ traefik_domain }}`)
+      # traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https
+      # traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https
+      # traefik.http.routers.traefik.middlewares=traefik-https-redirect
+      # traefik.http.routers.dashboard.entrypoints=https
+
