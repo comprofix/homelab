@@ -13,7 +13,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: privatebin
-    image: ghcr.io/privatebin/nginx-fpm-alpine:latest@sha256:3a2fe389cbff0cd35377fe794937f68a8ed93d9182f8779eda686a10cc2ad216
+    image: ghcr.io/privatebin/nginx-fpm-alpine:latest@sha256:3c418de52cfc611b7ef562e60af4f72d3b8013e8f95f54ab5c49024998106549
     restart_policy: always
     recreate: true
     networks:
