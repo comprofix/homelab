@@ -8,8 +8,8 @@ terraform {
 
     required_providers {
         proxmox = {
-            source = "Terraform-for-Proxmox/proxmox"
-            version = ">= 0.0.1"
+            source = "Telmate/proxmox"
+            version = "3.0.1-rc1"
         }
     }
 }
@@ -26,6 +26,18 @@ variable "proxmox_api_token_secret" {
     type = string
 }
 
+variable "ci_user" {
+    type = string
+}
+
+variable "ci_password" {
+    type = string
+}
+
+variable "ssh_key" {
+    type = string
+}
+
 provider "proxmox" {
 
     pm_api_url = var.proxmox_api_url
@@ -33,9 +45,6 @@ provider "proxmox" {
     pm_api_token_secret = var.proxmox_api_token_secret
     pm_timeout = 1800
     pm_parallel = 2 # Fix vm hdd lock timeout
-
-
-
 
     # (Optional) Skip TLS Verification
     # pm_tls_insecure = true
