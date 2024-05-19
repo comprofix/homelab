@@ -21,7 +21,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: stirlingpdf
-    image: ghcr.io/stirling-tools/s-pdf:0.24.1
+    image: ghcr.io/stirling-tools/s-pdf:0.24.2
     restart_policy: always
     recreate: true
     networks:
