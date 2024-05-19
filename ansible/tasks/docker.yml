@@ -26,6 +26,7 @@
       - PyYAML==5.3.1
       - docker
       - docker-compose
+      - pymysql
     state: "present"
 
 - name: Ensure docker users are added to the docker group.
