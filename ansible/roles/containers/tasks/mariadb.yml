@@ -13,7 +13,7 @@
   
 - name: Create the {{container_name}} container
   docker_container:
-    name: mariadb
+    name: "{{container_name}}"
     image: ghcr.io/linuxserver/mariadb:10.11.6
     restart_policy: always
     recreate: true
@@ -25,5 +25,5 @@
       MYSQL_ROOT_PASSWORD: "{{MYSQL_ROOT_PASSWORD}}"
       TZ: "Australia/Brisbane"
     volumes:
-      - /mnt/nfs/docker/mariadb/config:/config
+      - "{{ docker_configs }}/{{container_name}}/config:/config"
     

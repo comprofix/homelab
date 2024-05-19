@@ -1,0 +1,40 @@
+---
+- name: Add Docker apt key.
+  ansible.builtin.get_url:
+    url: "{{ docker_apt_gpg_key }}"
+    dest: /etc/apt/trusted.gpg.d/docker.asc
+    mode: '0644'
+    force: false
+    checksum: "{{ docker_apt_gpg_key_checksum | default(omit) }}"
+  ignore_errors: true
+
+- name: Add Docker repository.
+  apt_repository:
+    repo: "{{ docker_apt_repository }}"
+    state: present
+    filename: "{{ docker_apt_filename }}"
+    update_cache: true
+
+- name: Install Docker packages.
+  package:
+    name: "{{ docker_packages }}"
+    state: "present"
+
+- name: Install Docker Module for Python
+  pip:
+    name:
+      - PyYAML==5.3.1
+      - docker
+      - docker-compose
+      - pymysql
+    state: "present"
+
+- name: Ensure docker users are added to the docker group.
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users }}"
+
+- name: Reset ssh connection to apply user changes.
+  meta: reset_connection

@@ -1,0 +1,18 @@
+---
+# tasks file for nfs
+- name: Install NFS mount utility
+  ansible.builtin.apt:
+    update_cache: true
+    pkg: nfs-common
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Mount an NFS volume - {{ nfs_source }}
+  ansible.posix.mount:
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    opts: "{{ item.opts | default(nfs_mount_opts) }}"
+    state: "{{ item.state | default( 'mounted' ) }}"
+    fstype: nfs
+  with_items: "{{ nfs_share_mounts }}"
+

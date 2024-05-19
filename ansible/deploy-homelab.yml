@@ -1,134 +1,135 @@
 ---
-- hosts: main
+- hosts: all
   become: yes
 
-  tasks:
-    - name: Install Baseline Configuration
-      import_tasks: tasks/baseline.yml
-      tags: baseline_install
+  roles:
+    - role: base
+      
 
 - hosts: nfs
   become: yes
-
-  tasks:
-    - name: Mount NFS Drives
-      import_tasks: tasks/mount-nfs.yml
-      tags: mount_nfs
+  roles:
+    - role: nfs
+      nfs_share_mounts:
+        - name: Docker share
+          path: /mnt/nfs/docker
+          src: truenas.comprofix.xyz:/mnt/DS4232/docker
+        - name: Data share
+          path: /mnt/nfs/data
+          src: truenas.comprofix.xyz:/mnt/DS4232/data
 
 - hosts: docker
   become: yes
-
-  tasks:
-    - name: Install Docker
-      import_tasks: tasks/docker.yml
-      tags: docker_install
+  roles:
+    - role: docker
+    
   
-  
-- hosts: dockerserver
+- hosts: containers
   become: yes
-  tasks:
+  roles:
+    - role: containers
     
-    - name: Deploy mariadb
-      import_tasks: tasks/mariadb.yml
-      tags: mariadb_install
+#     - name: Deploy mariadb
+#       import_tasks: tasks/mariadb.yml
+#       tags: mariadb_install
 
-    - name: Deploy Postgres
-      import_tasks: tasks/postgres.yml
-      tags: postgres_install
+#     - name: Deploy Postgres
+#       import_tasks: tasks/postgres.yml
+#       tags: postgres_install
 
-    - name: "Deploy Traefik"
-      import_tasks: tasks/traefik.yml
-      tags: traefik_install
+#     - name: "Deploy Traefik"
+#       import_tasks: tasks/traefik.yml
+#       tags: traefik_install
     
-    - name: "Deploy Portainer"
-      import_tasks: tasks/portainer.yml
-      tags: portainer_install
+#     - name: "Deploy Portainer"
+#       import_tasks: tasks/portainer.yml
+#       tags: portainer_install
     
-    - name: Deploy dozzle
-      import_tasks: tasks/dozzle.yml
-      tags: dozzle_install
+#     - name: Deploy dozzle
+#       import_tasks: tasks/dozzle.yml
+#       tags: dozzle_install
 
-    - name: Deploy Invoiceninja
-      import_tasks: tasks/invoiceninja.yml
-      tags: invoiceninja_install
+#     - name: Deploy Invoiceninja
+#       import_tasks: tasks/invoiceninja.yml
+#       tags: invoiceninja_install
     
-    - name: Deploy Mealie
-      import_tasks: tasks/mealie.yml
-      tags: mealie_install
+#     - name: Deploy Mealie
+#       import_tasks: tasks/mealie.yml
+#       tags: mealie_install
 
-    - name: Deploy sabnzb
-      import_tasks: tasks/sabnzbd.yml
-      tags: sabnzbd_install
+#     - name: Deploy sabnzb
+#       import_tasks: tasks/sabnzbd.yml
+#       tags: sabnzbd_install
     
-    - name: Deploy Sonarr
-      import_tasks: tasks/sonarr.yml
-      tags: sonarr_install
+#     - name: Deploy Sonarr
+#       import_tasks: tasks/sonarr.yml
+#       tags: sonarr_install
 
-    - name: Deploy Radarr
-      import_tasks: tasks/radarr.yml
-      tags: radarr_install
+#     - name: Deploy Radarr
+#       import_tasks: tasks/radarr.yml
+#       tags: radarr_install
 
-    - name: Deploy Readarr
-      import_tasks: tasks/readarr.yml
-      tags: readarr_install
+#     - name: Deploy Readarr
+#       import_tasks: tasks/readarr.yml
+#       tags: readarr_install
 
-    - name: Deploy Prowlarr
-      import_tasks: tasks/prowlarr.yml
-      tags: prowlarr_install
+#     - name: Deploy Prowlarr
+#       import_tasks: tasks/prowlarr.yml
+#       tags: prowlarr_install
 
-    - name: Deploy Lidarr
-      import_tasks: tasks/lidarr.yml
-      tags: lidarr_install
+#     - name: Deploy Lidarr
+#       import_tasks: tasks/lidarr.yml
+#       tags: lidarr_install
 
-    - name: Deploy Jellyseerr
-      import_tasks: tasks/jellyseerr.yml
-      tags: jellyseerr_install
+#     - name: Deploy Jellyseerr
+#       import_tasks: tasks/jellyseerr.yml
+#       tags: jellyseerr_install
 
-    - name: Deploy speedtest
-      import_tasks: tasks/speedtest.yml
-      tags: speedtest_install
+#     - name: Deploy speedtest
+#       import_tasks: tasks/speedtest.yml
+#       tags: speedtest_install
 
-    - name: Deploy pykms
-      import_tasks: tasks/pykms.yml
-      tags: pykms_install
+#     - name: Deploy pykms
+#       import_tasks: tasks/pykms.yml
+#       tags: pykms_install
          
-    - name: Deploy vaultwarden
-      import_tasks: tasks/vaultwarden.yml
-      tags: vaultwarden_install
+#     - name: Deploy vaultwarden
+#       import_tasks: tasks/vaultwarden.yml
+#       tags: vaultwarden_install
 
-    - name: Deploy planka
-      import_tasks: tasks/planka.yml
-      tags: planka_install
+#     - name: Deploy planka
+#       import_tasks: tasks/planka.yml
+#       tags: planka_install
     
-    - name: Deploy homepage
-      import_tasks: tasks/homepage.yml
-      tags: homepage_install
+#     - name: Deploy homepage
+#       import_tasks: tasks/homepage.yml
+#       tags: homepage_install
 
-    - name: Deploy osTicket
-      import_tasks: tasks/osticket.yml
-      tags: osticket_install
+#     - name: Deploy osTicket
+#       import_tasks: tasks/osticket.yml
+#       tags: osticket_install
 
-    - name: Deploy qbittorrent
-      import_tasks: tasks/qbittorrent.yml
-      tags: qbittorrent_install
+#     - name: Deploy qbittorrent
+#       import_tasks: tasks/qbittorrent.yml
+#       tags: qbittorrent_install
 
-    - name: Deploy Stirling PDF
-      import_tasks: tasks/stirlingpdf.yml
-      tags: stirlingpdf_install
+#     - name: Deploy Stirling PDF
+#       import_tasks: tasks/stirlingpdf.yml
+#       tags: stirlingpdf_install
     
-    - name: Deploy Code-Server
-      import_tasks: tasks/codeserver.yml
-      tags: codeserver_install
+#     - name: Deploy Code-Server
+#       import_tasks: tasks/codeserver.yml
+#       tags: codeserver_install
 
-    - name: Deploy PrivateBin
-      import_tasks: tasks/privatebin.yml
-      tags: privatebin_install
+#     - name: Deploy PrivateBin
+#       import_tasks: tasks/privatebin.yml
+#       tags: privatebin_install
     
-- hosts: omada
-  become: yes
+# - hosts: omada
+#   become: yes
 
-  tasks: 
-    - name: Deploy Omada
-      import_tasks: tasks/omada.yml
-      tags: omada_install
+#   tasks: 
+#     - name: Deploy Omada
+#       import_tasks: tasks/omada.yml
+#       tags: omada_install
 

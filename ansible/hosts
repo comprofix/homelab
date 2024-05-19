@@ -1,9 +1,10 @@
-[main] 
+[gitlab] 
 gitlab.comprofix.com
-docker.comprofix.xyz
-jellyfin-svr.comprofix.xyz
-omada-server.comprofix.xyz
+
+[vps01]
 vps01.comprofix.com
+
+[vps02]
 vps02.comprofix.com
 
 [nfs] 
@@ -16,7 +17,7 @@ docker.comprofix.xyz
 omada-server.comprofix.xyz
 vps02.comprofix.com
 
-[dockerserver] 
+[containers] 
 docker.comprofix.xyz
 
 [omada]

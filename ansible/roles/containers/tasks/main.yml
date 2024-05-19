@@ -1,0 +1,9 @@
+---
+# tasks file for containers
+- name: "Deploy Portainer"
+  import_tasks: tasks/portainer.yml
+  tags: portainer_install
+
+- name: Deploy mariadb
+  import_tasks: tasks/mariadb.yml
+  tags: mariadb_install
