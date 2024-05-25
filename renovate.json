@@ -16,10 +16,4 @@
     "commitMessagePrefix": "chore(deps-major): ",
     "labels": ["dependencies", "breaking"]
   } 
-  "packageRules": [
-    {
-      "matchFileNames": ["terraform/proxmox/provider.tf"],
-      "excludePackageNames": ["Telmate/proxmox"]
-    }
-  ]
 }
