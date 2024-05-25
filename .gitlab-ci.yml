@@ -16,7 +16,8 @@ deploy:
     - echo "HOST *" > ~/.ssh/config
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
   script:
-    - |+
+    - |
+      /bin/bash
       changed_tasks=($(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA | grep '\.yml$' ))
       if [ ! -z "$changed_tasks" ]; then
         chmod 700 ansible
