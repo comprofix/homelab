@@ -14,7 +14,7 @@ if [ ! -z "$changed_tasks" ]; then
                 echo "Role: $role"
                 echo "Role Tasks: $role_task"
                 echo "Tags: $tags"
-                ansible-playbook --check deploy-homelab.yml --tags "$tags" --vault-password-file ~/.vault_password.txt
+                ansible-playbook deploy-homelab.yml --tags "$tags" --vault-password-file ~/.vault_password.txt
                 exit
             fi
         fi
