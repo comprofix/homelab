@@ -17,8 +17,8 @@ deploy:
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
   script:
     - |
-      if [ git diff ]; then
-        changed_tasks=($(git diff --name-only $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA | grep "^ansible/roles/.*\.yml$"))
+      changed_tasks=($(git diff-tree --no-commit-id --name-only -r origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME -r $CI_COMMIT_SHA))
+      if [[ ! -z "$changed_tasks" ]]; then
         chmod 700 ansible
         cd ansible
         echo "$ANSIBLE_VAULT_PASSWORD" > .vault_password.txt
