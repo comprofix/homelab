@@ -18,8 +18,7 @@ if [ ! -z "$changed_tasks" ]; then
                 exit
             fi
         fi
-
     done
 else
-echo "No changes detected in task files. Skipping Ansible playbook execution."
+    echo "No changes detected in task files. Skipping Ansible playbook execution."
 fi
