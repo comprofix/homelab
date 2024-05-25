@@ -16,7 +16,7 @@ deploy:
     - echo "HOST *" > ~/.ssh/config
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
   script:
-    - echo "$ANSIBLE_VAULT_PASSWORD" > .vault_password.txt
+    - echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_password.txt
     - ./ansible/scripts/deploy.sh $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA 
   only:
     - master
