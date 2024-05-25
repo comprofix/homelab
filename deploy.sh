@@ -1,6 +1,6 @@
 #!/bin/bash
 
-changed_tasks=($(git diff-tree --no-commit-id --name-only -r 67552975a382f972dc7dfa645baa9595fa5cf746 | grep '\.yml$'))
+changed_tasks=($(git diff-tree --no-commit-id --name-only -r ca4fdd3fd13f9330d6783e865222550f6590c059 | grep '\.yml$'))
       if [[ ! -z "$changed_tasks" ]]; then
         chmod 700 ansible
         cd ansible
