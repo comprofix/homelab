@@ -17,8 +17,8 @@ deploy:
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
   script:
     - |+
-      changed_tasks=($(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA))
-      if [[ ! -z "$changed_tasks" ]]; then
+      changed_tasks=($(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA | grep '\.yml$' ))
+      if [ ! -z "$changed_tasks" ]; then
         chmod 700 ansible
         cd ansible
         echo "$ANSIBLE_VAULT_PASSWORD" > .vault_password.txt
@@ -34,7 +34,7 @@ deploy:
             echo "The following task file has been updated: $updated_task"
             echo "Running Ansible playbook..."
             tags="${basename%.*}_install"
-            ansible-playbook deploy-homelab.yml --tags "$tags" --vault-password-file .vault_password.txt
+            ansible-playbook deploy-homelab.yml --tags "$tags" --vault-password-file .vault_password.txtv
           fi
         done
       else
