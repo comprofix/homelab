@@ -6,7 +6,8 @@ deploy:
   image: alpine:latest # Use a base image with Python installed
   before_script:
     - apk update
-    - apk add --no-cache git openssh ansible
+    - apk add --no-cache git openssh ansible bash
+    - ln -sf /bin/bash /bin/sh
     - mkdir -p ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
