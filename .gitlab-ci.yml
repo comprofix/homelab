@@ -16,8 +16,8 @@ deploy:
     - echo "HOST *" > ~/.ssh/config
     - echo "StrictHostKeyChecking no" >> ~/.ssh/config
   script:
-    - |
-      changed_tasks=($(git diff-tree --no-commit-id --name-only -r origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME -r $CI_COMMIT_SHA))
+    - |+
+      changed_tasks=($(git diff-tree --no-commit-id --name-only -r $CI_COMMIT_SHA))
       if [[ ! -z "$changed_tasks" ]]; then
         chmod 700 ansible
         cd ansible
