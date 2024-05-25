@@ -20,6 +20,6 @@
       src: truenas.comprofix.xyz:/mnt/DS4232/docker
     - name: Data share
       path: /mnt/nfs/data
-      src: truenas.comprofix.xyz:/mnt/DS4232/data
+      src: truenas.comprofix.xyz:/mnt/DS4232/data/
 
 
