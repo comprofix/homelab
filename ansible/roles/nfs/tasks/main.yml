@@ -1,5 +1,5 @@
 ---
-# tasks file for nfs
+  
 - name: Install NFS mount utility
   ansible.builtin.apt:
     update_cache: true
@@ -14,5 +14,12 @@
     opts: "{{ item.opts | default(nfs_mount_opts) }}"
     state: "{{ item.state | default( 'mounted' ) }}"
     fstype: nfs
-  with_items: "{{ nfs_share_mounts }}"
+  with_items:
+    - name: Docker share
+      path: /mnt/nfs/docker
+      src: truenas.comprofix.xyz:/mnt/DS4232/docker
+    - name: Data share
+      path: /mnt/nfs/data
+      src: truenas.comprofix.xyz:/mnt/DS4232/data
+
 

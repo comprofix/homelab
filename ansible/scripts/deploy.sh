@@ -9,14 +9,9 @@ if [ ! -z "$changed_tasks" ]; then
         role_task=$(echo "$task" | awk -F/ '{print $4}')
         tags=${basename%.*}_install
         if [[ "$basename" != "deploy-homelab.yml" && "$basename" != "all.yml" && "$basename" != "all.example.yml" && "$basename" != ".gitlab-ci.yml" && "$role_task" != "defaults" && "$role_task" != "meta" && "$role_task" != "vars" && "$role_task" != "templates" ]] ; then
-            if [[ "$role" = "containers" && "$basename" != "main.yml" ]]; then
-                echo "Basename: $basename"
-                echo "Role: $role"
-                echo "Role Tasks: $role_task"
-                echo "Tags: $tags"
+            #if [[ "$role" = "containers" ]]; then
                 ansible-playbook deploy-homelab.yml --tags "$tags" --vault-password-file ~/.vault_password.txt
-                exit
-            fi
+            #fi
         fi
     done
 else

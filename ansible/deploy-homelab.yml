@@ -11,13 +11,6 @@
   become: yes
   roles:
     - role: nfs
-      nfs_share_mounts:
-        - name: Docker share
-          path: /mnt/nfs/docker
-          src: truenas.comprofix.xyz:/mnt/DS4232/docker
-        - name: Data share
-          path: /mnt/nfs/data
-          src: truenas.comprofix.xyz:/mnt/DS4232/data
   tags: nfs
 
 - hosts: docker
