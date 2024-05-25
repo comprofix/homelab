@@ -1,5 +1,5 @@
 ---
-ansible_user: root
+ansible_user: administrator
 
 docker_configs: "/mnt/nfs/docker" # CHANGE_ME!!! - Change to the folder where you docker volume data lives.
 
