@@ -3,28 +3,26 @@
   become: yes
   roles:
     - role: base
-  tags: base
-
-      
+  tags: base_install
 
 - hosts: nfs
   become: yes
   roles:
     - role: nfs
-  tags: nfs
+  tags: nfs_install
 
 - hosts: docker
   become: yes
   roles:
     - role: docker
-  tags: docker
+  tags: docker_install
     
   
 - hosts: containers
   become: yes
   roles:
     - role: containers
-  tags: containers
+  tags: containers_install
 
     
 # - hosts: omada
