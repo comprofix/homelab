@@ -2,25 +2,25 @@
 - hosts: all
   become: yes
   roles:
-    - role: base
+    - base
   tags: base_install
 
 - hosts: nfs
   become: yes
   roles:
-    - role: nfs
+    - nfs
   tags: nfs_install
 
 - hosts: docker
   become: yes
   roles:
-    - role: docker
+    - docker
   tags: docker_install
 
 - hosts: gitea
   become: yes
   roles:
-    - role: certbot
+    - role: certbot    
       certificates:
         - name: gitea.comprofix.com
   tags: gitea_install
@@ -28,7 +28,7 @@
 - hosts: containers
   become: yes
   roles:
-    - role: containers
+    - containers
   tags: containers_install
 
     
