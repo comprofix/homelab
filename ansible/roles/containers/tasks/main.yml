@@ -95,3 +95,7 @@
 - name: Deploy Invoiceninja
   import_tasks: tasks/invoiceninja.yml
   tags: invoiceninja_install
+
+- name: Deploy gitea-runner
+  import_tasks: tasks/gitea-runner.yml
+  tags: gitea-runner_install

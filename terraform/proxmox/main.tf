@@ -81,13 +81,13 @@ resource "proxmox_vm_qemu" "docker" {
 }
 
 
-resource "proxmox_vm_qemu" "gitlab" {
+resource "proxmox_vm_qemu" "gitea" {
     
     # VM General Settings
     target_node = "pve1"
     vmid = "100"
-    name = "gitlab"
-    desc = "Gitlab Server"
+    name = "gitea"
+    desc = "Gitea Server"
 
 
     # VM Advanced General Settings

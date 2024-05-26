@@ -1,0 +1,48 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'gitea-runner'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+    - "{{ docker_configs }}/{{container_name}}/config"
+
+- name: Check that config.yaml exists
+  stat:
+    path: "{{ docker_configs }}/{{container_name}}/config/config.yaml"
+  register: configyaml
+
+- name: Create config.yaml file
+  file:
+    path: "{{ docker_configs }}/{{container_name}}/config/config.yaml"
+    state: touch
+    mode: '0600'
+    access_time: preserve
+    modification_time: preserve
+  when: configyaml.stat.exists == False
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: gitea-runner
+    image: gitea/act_runner:0.2.10
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ docker_configs }}/{{container_name}}/config/config.yaml:/config.yaml"
+    env:
+      CONFIG_FILE: "/config.yaml"
+      GITEA_INSTANCE_URL: "https://gitea.comprofix.com"
+      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ GITEA_RUNNER_TOKEN }}"
+      GITEA_RUNNER_NAME: "gitea-runner"
+      GITEA_RUNNER_LABELS: "alpine-latest:docker://alpine:latest,ubuntu-latest:docker://node:16-bullseye,ubuntu-22.04:docker://node:16-bullseye,ubuntu-20.04:docker://node:16-bullseye,ubuntu-18.04:docker://node:16-buster"
+
+
+
+    
