@@ -1,0 +1,42 @@
+---
+
+- name: Install Certbot
+  package: 
+    name: 
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+  become: yes
+
+- name: Copy Cloudflare credentials
+  template:
+    src: templates/cloudflare.ini
+    dest: "/etc/letsencrypt/cloudflare.ini"
+    mode: '0600'
+
+- name: Generate certificates
+  command: certbot certonly --noninteractive --agree-tos --email "{{ CF_API_EMAIL }}" --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d '{{ item.name }}'
+  become: yes
+  with_items: "{{ certificates }}"
+
+- name: Add cron job for certbot renewal
+  cron:
+    name: Certbot automatic renewal.
+    job: "certbot renew --quiet"
+    minute: "30"
+    hour: "3"
+    user: "{{ ansible_user | default(lookup('env', 'USER')) }}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
