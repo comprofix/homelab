@@ -1,6 +1,9 @@
 [gitlab] 
 gitlab.comprofix.com
 
+[gitea]
+gitea.comprofix.com
+
 [vps01]
 vps01.comprofix.com
 
