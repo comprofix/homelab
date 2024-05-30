@@ -27,6 +27,23 @@
     hour: "3"
     user: "{{ ansible_user | default(lookup('env', 'USER')) }}"
 
+- name: Fix ownership for certificats
+  file: 
+    path: /etc/letsencrypt/live
+    owner: root
+    group: root
+    mode: u=rwX,g=rX,o=rX
+
+- name: Fix ownership for certificats
+  file: 
+    path: /etc/letsencrypt/archive
+    owner: root
+    group: root
+    mode: u=rwX,g=rX,o=rX
+
+
+
+
 
 
 

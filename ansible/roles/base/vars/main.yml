@@ -11,3 +11,4 @@ install_packages: # Add addition packages here
   - python3-pip
   - nfs-common
   - cron
+  - jq
