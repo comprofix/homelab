@@ -23,27 +23,17 @@ http:
     gitlab:
       entryPoints:
         - "https"
-      rule: "Host(`gitlab.comprofix.com`)"
+      rule: "Host(`git.comprofix.com`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
       service: gitlab
 
-    gitea:
-      entryPoints:
-        - "https"
-      rule: "Host(`gitea.comprofix.com`)"
-      middlewares:
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: gitea
-
     registry.gitlab:
       entryPoints:
         - "https"
-      rule: "Host(`registry.gitlab.comprofix.com`)"
+      rule: "Host(`registry.git.comprofix.com`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -64,18 +54,14 @@ http:
     gitlab:
       loadBalancer:
         servers:
-          - url: "https://10.10.10.6"
+          - url: "https://10.10.10.7"
         passHostHeader: true
-    gitea:
-      loadBalancer:
-        servers:
-          - url: "https://gitea.comprofix.com"
-        passHostHeader: true
+    
 
     registry.gitlab:
       loadBalancer:
         servers:
-          - url: "https://10.10.10.6"
+          - url: "https://10.10.10.7"
         passHostHeader: true
 
   middlewares:
