@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: mealie
-    image: ghcr.io/mealie-recipes/mealie:v1.7.0
+    image: ghcr.io/mealie-recipes/mealie:v1.6.8
     restart_policy: always
     networks:
       - name: traefik
