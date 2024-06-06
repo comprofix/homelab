@@ -8,8 +8,7 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/omada"
   
 - name: Create the {{container_name}} container
   docker_container:
@@ -39,6 +38,6 @@
       - /omada/logs:/opt/tplink/EAPController/logs
     labels:
       traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
+      traefik.http.routers.{{container_name}}.rule=Host(`omada.comprofix.xyz`)
       traefik.http.routers.{{container_name}}.entrypoints=https
       traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare

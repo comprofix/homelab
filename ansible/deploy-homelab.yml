@@ -19,15 +19,16 @@
     - docker
   tags: docker_install
 
-- hosts: gitea
+- hosts: gitlab
   become: yes
   roles:
     - base
     - role: certbot    
       certificates:
-        - name: gitea.comprofix.com
-    - role: gitea
-  tags: gitea_install
+        - name: git.comprofix.com
+        - name: registry.git.comprofix.com
+    - role: gitlab 
+  tags: gitlab_install
 
 - hosts: containers
   become: yes
@@ -36,11 +37,13 @@
   tags: containers_install
 
     
-# - hosts: omada
-#   become: yes
+- hosts: omada
+  become: yes
+  roles:
+    - base
+    - docker
+    - omada
+  tags: omada_install
 
-#   tasks: 
-#     - name: Deploy Omada
-#       import_tasks: tasks/omada.yml
-#       tags: omada_install
+  
 

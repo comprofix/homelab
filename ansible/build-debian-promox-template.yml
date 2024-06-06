@@ -3,14 +3,14 @@
   become: yes
 
   tasks:
-    - name: Delete existing template
-      community.general.proxmox_kvm:
-        api_host: "{{ api_host }}"
-        api_user: "{{ api_user }}"
-        api_password: "{{ api_password }}"
-        node: "{{ node_target }}"
-        name: "debian-12-generic-amd64"
-        state: absent
+    # - name: Delete existing template
+    #   community.general.proxmox_kvm:
+    #     api_host: "{{ api_host }}"
+    #     api_user: "{{ api_user }}"
+    #     api_password: "{{ api_password }}"
+    #     node: "{{ node_target }}"
+    #     name: "debian-12-generic-amd64"
+    #     state: absent
 
     - name: Download cloud-init image
       register: image

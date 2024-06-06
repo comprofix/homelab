@@ -8,13 +8,13 @@ api_host: "{{ ansible_host }}"
 api_user: root@pam # CHANGE_ME!!!
 api_password: 8ug58unny # CHANGE_ME!!! - Set login password
 api_token_id: ansible 
-api_token_secret: 9e2e91bc-ec7b-4412-8105-228be73320fd # CHANGE_ME!!! - Set Tocken Secret.
+api_token_secret: c5f56ccb-8aad-4f5d-a2bd-13f7da88a142 # CHANGE_ME!!! - Set Tocken Secret.
 
 # Proxmox node target
-node_target: pve1
+node_target: pve2
 
 # VM storage target
-storage_target: storage0 # CHANGE_ME!!! - Set storage target name
+storage_target: local-zfs # CHANGE_ME!!! - Set storage target name
 
 # cloud-init configuration
 ci_user: administrator # CHANGE_ME!!! - Set Cloud-init username

@@ -5,8 +5,8 @@
 resource "proxmox_vm_qemu" "docker" {
     
     # VM General Settings
-    target_node = "pve1"
-    vmid = "105"
+    target_node = "pve2"
+    vmid = "101"
     name = "docker"
     desc = "Docker Server"
 
@@ -47,7 +47,7 @@ resource "proxmox_vm_qemu" "docker" {
 
     efidisk {
         efitype = "4m"
-        storage = "proxmox"
+        storage = "local-zfs"
     }
 
     disks {
@@ -55,7 +55,7 @@ resource "proxmox_vm_qemu" "docker" {
       scsi0 {
         disk {
           size       = 40
-          storage    = "proxmox"
+          storage    = "local-zfs"
         }
       }
     }
@@ -63,7 +63,7 @@ resource "proxmox_vm_qemu" "docker" {
 
     # VM Cloud-Init Settings
     os_type = "cloud-init"
-    cloudinit_cdrom_storage = "proxmox"
+    cloudinit_cdrom_storage = "local-zfs"
 
     # (Optional) IP Address and Gateway
     ipconfig0 = "ip=10.10.10.5/24,gw=10.10.10.1"
@@ -81,13 +81,13 @@ resource "proxmox_vm_qemu" "docker" {
 }
 
 
-resource "proxmox_vm_qemu" "gitea" {
+resource "proxmox_vm_qemu" "gitlab" {
     
     # VM General Settings
-    target_node = "pve1"
-    vmid = "100"
-    name = "gitea"
-    desc = "Gitea Server"
+    target_node = "pve2"
+    vmid = "102"
+    name = "gitlab"
+    desc = "gitlab Server"
 
 
     # VM Advanced General Settings
@@ -126,15 +126,15 @@ resource "proxmox_vm_qemu" "gitea" {
 
     efidisk {
         efitype = "4m"
-        storage = "proxmox"
+        storage = "local-zfs"
     }
 
     disks {
     scsi {
       scsi0 {
         disk {
-          size       = 80
-          storage    = "proxmox"
+          size       = 40
+          storage    = "local-zfs"
         }
       }
     }
@@ -142,10 +142,10 @@ resource "proxmox_vm_qemu" "gitea" {
 
     # VM Cloud-Init Settings
     os_type = "cloud-init"
-    cloudinit_cdrom_storage = "proxmox"
+    cloudinit_cdrom_storage = "local-zfs"
 
     # (Optional) IP Address and Gateway
-    ipconfig0 = "ip=10.10.10.2/24,gw=10.10.10.1"
+    ipconfig0 = "ip=10.10.10.7/24,gw=10.10.10.1"
     nameserver = "10.10.10.1"
     
     # (Optional) Default User
@@ -154,6 +154,61 @@ resource "proxmox_vm_qemu" "gitea" {
     
     # # (Optional) Add your SSH Public KEY
     sshkeys = <<EOF
+    ${ var.ssh_key }
+    EOF
+
+}
+
+
+resource "proxmox_lxc" "omada" {
+    
+    # VM General Settings
+    target_node = "pve2"
+    vmid = "200"
+    hostname = "omada"
+    description = "TP-Link Omada Controller"
+    ostemplate = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
+
+    password = "${var.ci_password}"
+
+
+
+    # VM Advanced General Settings
+    onboot = true
+    start = true
+    
+    timeouts {
+        create = "20m"
+        delete = "10m"
+    }
+  
+    # VM Memory Settings
+    memory = 4096
+    cores = 2
+    swap = 512
+
+    unprivileged = true
+    features {
+      nesting = true
+    }
+
+    // Terraform will crash without rootfs defined
+    rootfs {
+      storage = "local-zfs"
+      size    = "8G"
+    }
+
+    network {
+      name   = "eth0"
+      bridge = "vmbr0"
+      ip = "10.10.40.2/24"
+      gw = "10.10.40.1"
+      tag = "40"
+    }
+
+    
+    # # (Optional) Add your SSH Public KEY
+    ssh_public_keys = <<EOF
     ${ var.ssh_key }
     EOF
 

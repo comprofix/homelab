@@ -20,6 +20,10 @@
   import_tasks: tasks/dozzle.yml
   tags: dozzle_install
 
+- name: Gitlab Runner
+  import_tasks: tasks/gitlab-runner.yml
+  tags: gitlab_runner_install
+
 - name: Deploy Mealie
   import_tasks: tasks/mealie.yml
   tags: mealie_install
@@ -95,7 +99,3 @@
 - name: Deploy Invoiceninja
   import_tasks: tasks/invoiceninja.yml
   tags: invoiceninja_install
-
-- name: Deploy gitea-runner
-  import_tasks: tasks/gitea-runner.yml
-  tags: gitea-runner_install
