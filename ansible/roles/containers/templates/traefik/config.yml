@@ -1,16 +1,6 @@
 http:
  #region routers 
   routers:
-    proxmox:
-      entryPoints:
-        - "https"
-      rule: "Host(`jellyfin.comprofix.xyz`)"
-      middlewares:
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: jellyfin
-        
     omada:
       entryPoints:
         - "https"
@@ -40,12 +30,7 @@ http:
       tls: {}
       service: gitlab
 
-  services:
-    jellyfin:
-      loadBalancer:
-        servers:
-          - url: "http://jellyfin-svr.comprofix.xyz:8096/"
-        passHostHeader: true
+  services: 
     omada:
       loadBalancer:
         servers:
