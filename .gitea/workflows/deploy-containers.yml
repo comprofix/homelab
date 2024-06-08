@@ -16,12 +16,10 @@ jobs:
           apk update
           apk add --no-cache ansible nodejs npm git bash
           
-      - name: Checkout code
+      - name: Deploy containers
         uses: actions/checkout@v4
-
-      - name: Run deployment script
-        shell: bash
         run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
-          ./ansible/scripts/deploy.sh ${{ github.event.before }} ${{ github.sha }}
+          ./ansible/scripts/deploy.sh "${{ github.event.before }}" "${{ github.sha }}"
+
           
