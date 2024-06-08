@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: alpine-latest
+    container: alpine:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
