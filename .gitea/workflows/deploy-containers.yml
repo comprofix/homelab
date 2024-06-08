@@ -11,5 +11,10 @@ jobs:
     runs-on: alpine-latest
     container: alpine:latest
     steps:
+      - name: Install dependencies
+        run: |
+          apk update
+          apk add --no-cache ansible nodejs npm
+          
       - name: Checkout code
         uses: actions/checkout@v4
