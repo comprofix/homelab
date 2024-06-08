@@ -20,7 +20,8 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run deployment script
+        shell: bash
         run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
-          /bin/bash ./ansible/scripts/deploy.sh ${{ github.event.before }} ${{ github.sha }}
+          ./ansible/scripts/deploy.sh ${{ github.event.before }} ${{ github.sha }}
           
