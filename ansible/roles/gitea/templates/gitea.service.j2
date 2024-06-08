@@ -16,7 +16,7 @@ WorkingDirectory=/var/lib/gitea
 RuntimeDirectory=gitea
 ExecStart=/usr/local/bin/gitea web --config /etc/gitea/app.ini
 Restart=always
-Environment=USER=gitea HOME=/var/lib/gitea/data GITEA_WORK_DIR=/var/lib/gitea
+Environment=USER=git HOME=/var/lib/gitea/data GITEA_WORK_DIR=/var/lib/gitea
 WatchdogSec=30s
 #Capabilities to bind to low-numbered ports
 CapabilityBoundingSet=CAP_NET_BIND_SERVICE
