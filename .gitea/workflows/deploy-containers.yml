@@ -18,7 +18,7 @@ jobs:
           
       - name: Deploy containers
         uses: actions/checkout@v4
-        run: |
+      - run: |
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
           ./ansible/scripts/deploy.sh "${{ github.event.before }}" "${{ github.sha }}"
 
