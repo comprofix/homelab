@@ -1,0 +1,33 @@
+name: Deploy containers
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    runs-on: alpine-latest
+    steps:
+      - name: Prepare build
+        run: |
+          apk update
+          apk add --no-cache git openssh ansible bash
+          ln -sf /bin/bash /bin/sh
+          mkdir -p ~/.ssh
+          echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          eval $(ssh-agent -s)
+          ssh-add <(echo "$SSH_PRIVATE_KEY")
+          echo "HOST *" > ~/.ssh/config
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
+      
+      - name: Update container
+        run: |
+          echo "$ANSIBLE_VAULT_PASSWORD" > ~/.vault_password.txt
+          ./ansible/scripts/deploy.sh $CI_COMMIT_BEFORE_SHA $CI_COMMIT_SHA
+          
+
+
+
