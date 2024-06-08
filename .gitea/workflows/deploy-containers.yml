@@ -7,24 +7,9 @@ on:
 
 jobs:
   deploy:
+    name: Prepare Build
     runs-on: alpine-latest
-    container: alpine:latest
+    container: alpine-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
-      
-      - name: Install dependencies
-        run: |
-          apk update
-          apk add --no-cache ansible
-      
-      - name: Run deployment script
-        run: |
-          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
-          ./ansible/scripts/deploy.sh ${{ github.event.before }} ${{ github.sha }}
