@@ -14,7 +14,7 @@ jobs:
       - name: Install dependencies
         run: |
           apk update
-          apk add --no-cache ansible nodejs npm
+          apk add --no-cache ansible nodejs npm git
           
       - name: Checkout code
         uses: actions/checkout@v4
