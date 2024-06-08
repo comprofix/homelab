@@ -12,3 +12,6 @@ omada-server.comprofix.xyz ansible_user=root
 
 [gitlab]
 git.comprofix.com
+
+[gitea]
+gitea.comprofix.com

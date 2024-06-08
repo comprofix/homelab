@@ -24,6 +24,10 @@
   import_tasks: tasks/gitlab-runner.yml
   tags: gitlab_runner_install
 
+- name: Gitea Runner
+  import_tasks: tasks/gitea-runner.yml
+  tags: gitea_runner_install
+
 - name: Deploy Mealie
   import_tasks: tasks/mealie.yml
   tags: mealie_install
