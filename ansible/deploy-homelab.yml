@@ -36,7 +36,7 @@
       certificates:
       - name: '*.comprofix.com'
       - name: '*.comprofix.xyz' 
-    #- containers
+    - containers
   tags: containers_install
 
     
