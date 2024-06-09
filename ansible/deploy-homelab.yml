@@ -52,7 +52,7 @@
   become: yes
   roles:
     - base
-    - docker
+    - dockerxyz
     - role: certbot
       certificates:
       - name: '*.comprofix.com'
