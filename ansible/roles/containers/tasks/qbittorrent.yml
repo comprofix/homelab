@@ -27,7 +27,7 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     env:
       PUID: "1000"
       PGID: "1000"
@@ -41,10 +41,17 @@
       - /mnt/nfs/docker/qbittorrent/config:/config
       - /mnt/nfs/data:/data
       - /opt/vuetorrent:/vuetorrent
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
-      traefik.http.services.{{container_name}}.loadbalancer.server.port=8080
-      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http  
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: qbittorrent.comprofix.xyz
+    port: 8080
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

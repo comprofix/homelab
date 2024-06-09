@@ -17,7 +17,7 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     volumes:
       - /mnt/nfs/docker/jellyfin/config:/config
       - /mnt/nfs/data:/data
@@ -25,8 +25,17 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: jellyfin.comprofix.xyz
+    port: 8096
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

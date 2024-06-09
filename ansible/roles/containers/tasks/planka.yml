@@ -18,7 +18,7 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     env:
       BASE_URL: "https://planka.comprofix.xyz"
       DATABASE_URL: "postgresql://{{PLANKA_USER}}:{{PLANKA_PASS}}@docker.comprofix.xyz/planka"
@@ -27,10 +27,18 @@
       - /mnt/nfs/docker/planka/user-avatars:/app/public/user-avatars
       - /mnt/nfs/docker/planka/project-background-images:/app/public/project-background-images
       - /mnt/nfs/docker/planka/attachments:/app/public/attachments
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
 
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: planka.comprofix.xyz
+    port: 1337
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload
 

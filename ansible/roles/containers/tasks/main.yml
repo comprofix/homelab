@@ -1,8 +1,8 @@
 ---
 # tasks file for containers
-- name: "Deploy Traefik"
-  import_tasks: tasks/traefik.yml
-  tags: traefik_install
+- name: "Deploy nginx"
+  import_tasks: tasks/nginx.yml
+  tags: nginx_install
 
 - name: "Deploy Portainer"
   import_tasks: tasks/portainer.yml
@@ -19,10 +19,6 @@
 - name: Deploy dozzle
   import_tasks: tasks/dozzle.yml
   tags: dozzle_install
-
-- name: Gitlab Runner
-  import_tasks: tasks/gitlab-runner.yml
-  tags: gitlab_runner_install
 
 - name: Gitea Runner
   import_tasks: tasks/gitea-runner.yml

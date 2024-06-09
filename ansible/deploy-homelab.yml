@@ -32,7 +32,11 @@
 - hosts: containers
   become: yes
   roles:
-    - containers
+    - role: certbot
+      certificates:
+      - name: '*.comprofix.com'
+      - name: '*.comprofix.xyz' 
+    #- containers
   tags: containers_install
 
     

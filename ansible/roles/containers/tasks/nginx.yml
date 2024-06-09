@@ -1,7 +1,7 @@
 ---
 - name: Set Facts
   set_fact:
-    container_name: 'pykms'
+    container_name: 'nginx'
 
 - name: Create directories
   file:
@@ -10,23 +10,25 @@
   with_items:
     - "{{ docker_configs }}/{{container_name}}"
     - "{{ docker_configs }}/{{container_name}}/config"
-  
+
+
+- name: Create proxy docker network
+  docker_network:
+    name: "proxy_network"
+    state: present
+
 - name: Create the {{container_name}} container
   docker_container:
-    name: pykms
-    image: ghcr.io/py-kms-organization/py-kms:latest
+    name: nginx
+    image: nginx
     restart_policy: always
     recreate: true
     networks:
       - name: proxy_network
     ports:
-      - "1688:1688"
-    env:
-      IP: "0.0.0.0"
-      SQLITE: "true"
-      HWID: "RANDOM"
-      LOGLEVEL: "INFO"
+      - "80:80"
+      - "443:443"
     volumes:
-      - /mnt/nfs/docker/pykms/db:/home/py-kms/db
-      - /etc/localtime:/etc/localtime:ro
-
+      - /mnt/nfs/docker/nginx/config:/etc/nginx/conf.d/
+      - /etc/letsencrypt:/etc/letsencrypt
+    

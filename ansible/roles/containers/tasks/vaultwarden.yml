@@ -18,15 +18,24 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     env:
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
     volumes:
       /mnt/nfs/docker/vaultwarden/data:/data
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`vault.comprofix.com`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.com.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: vault.comprofix.com
+    port: 80
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

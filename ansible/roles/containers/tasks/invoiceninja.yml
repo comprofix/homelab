@@ -67,18 +67,11 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     volumes:
       - /mnt/nfs/docker/invoiceninja/config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf
       - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
       - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`invoice.comprofix.com`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
-      traefik.http.services.{{container_name}}.loadbalancer.server.port=80
-      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http
 
 - name: Create the invoiceninja-app container
   docker_container:
@@ -88,11 +81,28 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     volumes:
       - /mnt/nfs/docker/invoiceninja/config/hosts:/etc/hosts
       - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
       - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
 
+- name: Set Facts
+  set_fact:
+    container_name: 'invoiceninja-nginx'
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.com.j2
+    dest: "/mnt/nfs/docker/nginx/config/invoiceninja.conf"
+  vars:
+    domain: invoice.comprofix.com
+    port: 80
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload
 
     

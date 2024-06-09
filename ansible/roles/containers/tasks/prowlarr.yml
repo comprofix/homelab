@@ -18,7 +18,7 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     env:
       PUID: "1000"
       PGID: "1000"
@@ -27,8 +27,17 @@
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:prowlarr"
     volumes:
       - /mnt/nfs/docker/prowlarr/config:/config
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: prowlarr.comprofix.xyz
+    port: 9696
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

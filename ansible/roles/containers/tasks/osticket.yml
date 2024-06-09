@@ -18,7 +18,7 @@
     restart_policy: always
     recreate: true
     networks:
-      - name: traefik
+      - name: proxy_network
     env:
       SMTP_HOST: comprofix-com.mail.protection.outlook.com
       MYSQL_HOST: "{{MYSQL_HOST}}"
@@ -26,14 +26,6 @@
       MYSQL_USER: "{{OST_DB_USER}}"
       MYSQL_PASSWORD: "{{OST_DB_PASSWORD}}"
       INSTALL_SECRET: "{{OST_SIRI}}"
-    labels:
-      com.centurylinklabs.watchtower.enable=false
-      traefik.enable=true
-      traefik.http.services.{{container_name}}.loadbalancer.server.port=80
-      traefik.http.services.{{container_name}}.loadbalancer.server.scheme=http
-      traefik.http.routers.{{container_name}}.rule=Host(`helpdesk.comprofix.com`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
 
 - name: Add tzdata to osTicket container
   community.docker.docker_container_exec:
@@ -64,3 +56,17 @@
     query: 
       - USE comprofix_ost; 
       - TRUNCATE TABLE ost_session;
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.com.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: helpdesk.comprofix.com
+    port: 80
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

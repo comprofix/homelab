@@ -17,7 +17,7 @@
     image: ghcr.io/mealie-recipes/mealie:v1.8.0
     restart_policy: always
     networks:
-      - name: traefik
+      - name: proxy_network
     env:
       PUID: "1000"
       PGID: "1000"
@@ -32,8 +32,17 @@
       SMTP_HOST: comprofix-com.mail.protection.outlook.com
     volumes:
       - /mnt/nfs/docker/mealie/data/:/app/data
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`{{container_name}}.{{traefik_domain}}`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: mealie.comprofix.xyz
+    port: 9000
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload
