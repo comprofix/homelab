@@ -15,13 +15,6 @@ jobs:
         run: |
           apk update
           apk add --no-cache ansible nodejs npm git bash openssh
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-          eval $(ssh-agent -s)
-          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
-          echo "HOST *" > ~/.ssh/config
-          echo "StrictHostKeyChecking no" >> ~/.ssh/config
          
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,6 +23,13 @@ jobs:
       
       - name: Deploy containers
         run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          eval $(ssh-agent -s)
+          ssh-add <(echo "${{ secrets.SSH_PRIVATE_KEY }}")
+          echo "HOST *" > ~/.ssh/config
+          echo "StrictHostKeyChecking no" >> ~/.ssh/config
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
           ./ansible/scripts/deploy.sh "${{ github.event.before }}" "${{ github.sha }}"
 
