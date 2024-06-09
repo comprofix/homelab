@@ -243,13 +243,13 @@ resource "proxmox_lxc" "omada" {
     target_node = "pve2"
     vmid = "200"
     hostname = "omada"
-    description = "TP-Link Omada Controller"
     ostemplate = "local:vztmpl/debian-12-standard_12.2-1_amd64.tar.zst"
 
     password = "${var.ci_password}"
 
     memory = 4096
     swap = 512
+    cores = 2
 
 
     # VM Advanced General Settings

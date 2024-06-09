@@ -15,3 +15,6 @@ git.comprofix.com
 
 [gitea]
 gitea.comprofix.com
+
+[dev]
+dev.comprofix.xyz

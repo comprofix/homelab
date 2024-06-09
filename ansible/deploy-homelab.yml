@@ -19,17 +19,6 @@
     - docker
   tags: docker_install
 
-- hosts: gitlab
-  become: yes
-  roles:
-    - base
-    - role: certbot    
-      certificates:
-        - name: git.comprofix.com
-        - name: registry.git.comprofix.com
-    - role: gitlab 
-  tags: gitlab_install
-
 - hosts: gitea
   become: yes
   roles:
@@ -39,9 +28,6 @@
         - name: gitea.comprofix.com
     - role: gitea
   tags: gitea_install
-
-
-
 
 - hosts: containers
   become: yes
@@ -57,6 +43,19 @@
     - docker
     - omada
   tags: omada_install
+
+- hosts: dev
+  become: yes
+  roles:
+    - base
+    - docker
+    - role: certbot
+      certificates:
+      - name: '*.comprofix.com'
+      - name: '*.comprofix.xyz' 
+  tags: dev_install
+
+
 
   
 

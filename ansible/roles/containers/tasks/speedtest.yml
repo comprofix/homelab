@@ -20,6 +20,7 @@
     networks:
       - name: traefik
     env:
+      APP_KEY: "base64:ViJcK7rSIwGC+TAW7pRWnczB43zPPVHH2Hx80t7eVm0="
       PUID: "1000"
       PGID: "1000"
       DB_CONNECTION: "mysql"
