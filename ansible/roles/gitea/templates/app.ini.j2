@@ -33,14 +33,15 @@ SSH_PORT = 22
 LFS_START_SERVER = true
 LFS_JWT_SECRET = {{ LFS_JWT_SECRET }}
 OFFLINE_MODE = false
+LANDING_PAGE = explore
 
 [lfs]
 PATH = /var/lib/gitea/data/lfs
 
 [mailer]
 ENABLED = true
-SMTP_ADDR = {{ SMTP_ADDR }}
-SMTP_PORT = 
+SMTP_ADDR = {{ MAIL_HOST }}
+SMTP_PORT = {{ MAIL_PORT }}
 FROM = gitea@{{ NO_REPLY_ADDRESS }}
 USER = 
 PASSWD = 
