@@ -32,6 +32,7 @@
 - hosts: containers
   become: yes
   roles:
+    - nginx
     - role: certbot
       certificates:
       - name: '*.comprofix.com'
@@ -45,6 +46,10 @@
   roles:
     - base
     - docker
+    - nginx
+    - role: certbot
+      certificates:
+      - name: 'omada.comprofix.xyz'
     - omada
   tags: omada_install
 

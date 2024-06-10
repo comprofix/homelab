@@ -8,7 +8,7 @@ docker.comprofix.xyz
 docker.comprofix.xyz
 
 [omada]
-omada-server.comprofix.xyz ansible_user=root
+omada.comprofix.xyz ansible_user=root
 
 [gitlab]
 git.comprofix.com

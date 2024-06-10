@@ -36,8 +36,17 @@
     volumes:
       - /omada/data:/opt/tplink/EAPController/data
       - /omada/logs:/opt/tplink/EAPController/logs
-    labels:
-      traefik.enable=true
-      traefik.http.routers.{{container_name}}.rule=Host(`omada.comprofix.xyz`)
-      traefik.http.routers.{{container_name}}.entrypoints=https
-      traefik.http.routers.{{container_name}}.tls.certresolver=cloudflare
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: omada.comprofix.xyz
+    port: 8043
+    protocol: https
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

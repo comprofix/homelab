@@ -2,11 +2,15 @@
 
 - name: Install Certbot
   package: 
-    name: 
+    name:
       - certbot
       - python3-certbot-dns-cloudflare
     state: present
   become: yes
+
+- name: Install openssl python package
+  ansible.builtin.pip:
+    name: pyopenssl
 
 - name: Copy Cloudflare credentials
   template:

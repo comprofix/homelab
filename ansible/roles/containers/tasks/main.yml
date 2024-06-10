@@ -1,9 +1,5 @@
 ---
 # tasks file for containers
-- name: "Deploy nginx"
-  import_tasks: tasks/nginx.yml
-  tags: nginx_install
-
 - name: "Deploy Portainer"
   import_tasks: tasks/portainer.yml
   tags: portainer_install
