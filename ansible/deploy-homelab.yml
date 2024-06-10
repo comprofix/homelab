@@ -48,16 +48,6 @@
     - omada
   tags: omada_install
 
-- hosts: dev
-  become: yes
-  roles:
-    - base
-    - dockerxyz
-    - role: certbot
-      certificates:
-      - name: '*.comprofix.com'
-      - name: '*.comprofix.xyz' 
-  tags: dev_install
 
 
 
