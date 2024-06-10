@@ -34,6 +34,8 @@ resource "proxmox_vm_qemu" "docker" {
     cpu = "kvm64"
     bios = "ovmf"
 
+    startup = "up=600"
+
     
     # VM Memory Settings
     memory = 16384
@@ -250,7 +252,6 @@ resource "proxmox_lxc" "omada" {
     memory = 4096
     swap = 512
     cores = 2
-
 
     # VM Advanced General Settings
     onboot = true
