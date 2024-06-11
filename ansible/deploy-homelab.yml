@@ -5,20 +5,6 @@
     - base
   tags: base_install
 
-- hosts: nfs
-  become: yes
-  roles:
-    - base
-    - nfs
-  tags: nfs_install
-
-- hosts: docker
-  become: yes
-  roles:
-    - base
-    - docker
-  tags: docker_install
-
 - hosts: gitea
   become: yes
   roles:
@@ -32,6 +18,15 @@
 - hosts: containers
   become: yes
   roles:
+    - docker
+    - role: nfs
+      mounts:
+      - name: Docker share
+        path: /mnt/nfs/docker
+        src: truenas.comprofix.xyz:/mnt/datapool/docker
+      - name: Data share
+        path: /mnt/nfs/data
+        src: truenas.comprofix.xyz:/mnt/datapool/data
     - nginx
     - role: certbot
       certificates:
@@ -39,7 +34,6 @@
       - name: '*.comprofix.xyz' 
     - containers
   tags: containers_install
-
     
 - hosts: omada
   become: yes
@@ -52,6 +46,24 @@
       - name: 'omada.comprofix.xyz'
     - omada
   tags: omada_install
+
+- hosts: jellyfin
+  become: yes
+  roles:
+    - base
+    - role: nfs
+      mounts:
+      - name: Data share
+        path: /mnt/nfs/data
+        src: truenas.comprofix.xyz:/mnt/datapool/data
+    - docker
+    - nginx
+    - role: certbot
+      certificates:
+      - name: 'jellyfin.comprofix.xyz'
+    - jellyfin
+  tags: jellyfin_install
+
 
 
 

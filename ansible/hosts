@@ -1,20 +1,14 @@
-[nfs] 
-docker.comprofix.xyz
-
-[docker]
-docker.comprofix.xyz
-
 [containers] 
 docker.comprofix.xyz
 
 [omada]
 omada.comprofix.xyz ansible_user=root
 
-[gitlab]
-git.comprofix.com
-
 [gitea]
 gitea.comprofix.com
 
 [dev]
 dev.comprofix.xyz
+
+[jellyfin]
+jellyfin.comprofix.xyz

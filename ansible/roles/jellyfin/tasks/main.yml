@@ -1,0 +1,48 @@
+---
+- name: Import Jellyfin Team GPG key
+  apt_key:
+    url: https://repo.jellyfin.org/debian/jellyfin_team.gpg.key
+    state: present
+  register: apt_key_result
+  retries: 3
+  until: apt_key_result is succeeded
+
+- name: Add Jellyfin repository
+  apt_repository:
+    repo: >
+      deb https://repo.jellyfin.org/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }} main
+    state: present
+
+- name: Install Jellyfin
+  apt:
+    name:
+      - jellyfin
+      - python{{ "3" if ansible_python.version.major == 3 }}-lxml
+    state: present
+ 
+- name: Enable Jellyfin
+  systemd:
+    name: jellyfin
+    state: started
+    
+
+- name: Setup reverse proxy wait for container
+  template:
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/jellyfin.conf"
+  vars:
+    domain: jellyfin.comprofix.xyz
+    port: 8096
+    protocol: http
+
+
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload  
+  
+
+
+  

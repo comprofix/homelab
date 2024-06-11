@@ -7,19 +7,14 @@
     state: present
   when: ansible_os_family == "Debian"
 
-- name: Mount an NFS volume - {{ nfs_source }}
+- name: Mount an NFS volume
   ansible.posix.mount:
     src: "{{ item.src }}"
     path: "{{ item.path }}"
     opts: "{{ item.opts | default(nfs_mount_opts) }}"
     state: "{{ item.state | default( 'mounted' ) }}"
     fstype: nfs
-  with_items:
-    - name: Docker share
-      path: /mnt/nfs/docker
-      src: truenas.comprofix.xyz:/mnt/datapool/docker
-    - name: Data share
-      path: /mnt/nfs/data
-      src: truenas.comprofix.xyz:/mnt/datapool/data
+  with_items: "{{ mounts }}"
+    
 
 

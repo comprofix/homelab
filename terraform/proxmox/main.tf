@@ -56,7 +56,7 @@ resource "proxmox_vm_qemu" "docker" {
     scsi {
       scsi0 {
         disk {
-          size       = 40
+          size       = 80
           storage    = "local-zfs"
         }
       }
@@ -83,17 +83,16 @@ resource "proxmox_vm_qemu" "docker" {
 }
 
 
-resource "proxmox_vm_qemu" "gitlab" {
+resource "proxmox_vm_qemu" "jellyfin" {
     
     # VM General Settings
     target_node = "pve2"
     vmid = "102"
-    name = "gitlab"
-    desc = "gitlab Server"
-
+    name = "jellyfin"
 
     # VM Advanced General Settings
     onboot = true
+    startup = "up=600"
     scsihw       = "virtio-scsi-single"
 
     # VM OS Settings
@@ -117,7 +116,7 @@ resource "proxmox_vm_qemu" "gitlab" {
 
     
     # VM Memory Settings
-    memory = 16384
+    memory = 8192
 
     # VM Network Settings
     network {
@@ -171,6 +170,7 @@ resource "proxmox_vm_qemu" "gitea" {
 
     # VM Advanced General Settings
     onboot = true
+    startup = "up=600"
     scsihw       = "virtio-scsi-single"
 
     # VM OS Settings
@@ -300,6 +300,7 @@ resource "proxmox_vm_qemu" "docker-dev" {
 
     # VM Advanced General Settings
     onboot = true
+    startup = "up=600"
     scsihw       = "virtio-scsi-single"
 
     # VM OS Settings

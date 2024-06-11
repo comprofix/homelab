@@ -52,10 +52,6 @@
   import_tasks: tasks/jellyseerr.yml
   tags: jellyseerr_install
 
-- name: Deploy Jellyfin
-  import_tasks: tasks/jellyfin.yml
-  tags: jellyfin_install
-
 - name: Deploy speedtest
   import_tasks: tasks/speedtest.yml
   tags: speedtest_install
