@@ -14,7 +14,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: planka
-    image: ghcr.io/plankanban/planka:1.18.0
+    image: ghcr.io/plankanban/planka:1.18.1
     restart_policy: always
     recreate: true
     networks:
