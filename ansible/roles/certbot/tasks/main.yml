@@ -18,7 +18,7 @@
     mode: '0600'
 
 - name: Generate certificates
-  command: certbot certonly --noninteractive --agree-tos --email "{{ CF_API_EMAIL }}" --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d '{{ item.name }}'
+  command: certbot certonly --noninteractive --agree-tos --email "{{ CF_API_EMAIL }}" --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d '{{ item.name }}' -d '*.{{ item.name }}'
   become: yes
   with_items: "{{ certificates }}"
 

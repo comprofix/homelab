@@ -30,8 +30,8 @@
     - nginx
     - role: certbot
       certificates:
-      - name: '*.comprofix.com'
-      - name: '*.comprofix.xyz' 
+      - name: 'comprofix.com'
+      - name: 'comprofix.xyz' 
     - containers
   tags: containers_install
     
