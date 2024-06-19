@@ -2,13 +2,13 @@
 docker.comprofix.xyz
 
 [omada]
-omada.comprofix.xyz ansible_user=root
+omada.comprofix.xyz
 
 [gitea]
 gitea.comprofix.com
 
-[dev]
-dev.comprofix.xyz
+#[dev]
+#dev.comprofix.xyz
 
 [jellyfin]
 jellyfin.comprofix.xyz

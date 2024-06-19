@@ -1,11 +1,9 @@
 ---
-# vars file for vim
 - name: Update cache
   apt:
     force_apt_get: yes
     update_cache: yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
 
 - name: Update all packages to their latest version
   apt:
@@ -14,13 +12,11 @@
     state: latest
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-
 - name: Upgrade all packages on servers
   apt: 
     upgrade: dist
     force_apt_get: yes
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
 
 - name: Install required packages
   package:
@@ -31,11 +27,93 @@
     - install_packages
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
 
-
 - name: Remove /usr/lib/python3.11/EXTERNALLY-MANAGED
   file:
     path: /usr/lib/python3.11/EXTERNALLY-MANAGED
     state: absent
   when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: Download Oh My Zsh installation script
+  get_url:
+    url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    dest: /tmp/install_ohmyzsh.sh
+
+- name: Run Oh My Zsh installation script
+  become: no
+  command: sh /tmp/install_ohmyzsh.sh --unattended
+  register: ohmyzsh_result
+  failed_when: "'FAILED' in ohmyzsh_result.stderr"
+
+- name: Download zsh Dracula Theme
+  become: no
+  unarchive:
+    src: https://github.com/dracula/zsh/archive/refs/heads/master.zip
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Download moe theme for zsh
+  become: no
+  get_url:
+    url: https://gitea.comprofix.com/mmckinnon/dotfiles/raw/branch/master/oh-my-zsh/moe.zsh-theme
+    dest: "/home/{{ ansible_user }}/.oh-my-zsh/themes"
+    force: true
+
+- name: Move zsh theme to correct folder
+  become: no
+  copy: 
+    src: /tmp/zsh-master/
+    dest: /home/{{ ansible_user }}/.oh-my-zsh/themes
+    remote_src: yes
+
+- name: Create vim config paths
+  become: no
+  file:
+    path: "/home/{{ ansible_user }}/.vim/pack/themes/start/dracula"
+    state: directory
+
+- name: Download vim Dracula Theme
+  become: no
+  unarchive:
+    src: https://github.com/dracula/vim/archive/refs/heads/master.zip
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Move vim theme to correct folder
+  become: no
+  copy: 
+    src: /tmp/vim-master/ 
+    dest: /home/{{ ansible_user }}/.vim/pack/themes/start/dracula
+    remote_src: yes
+
+- name: Get zsh config
+  become: no
+  get_url:
+    url: https://gitea.comprofix.com/mmckinnon/dotfiles/raw/branch/master/zsh/zshrc
+    dest: "/home/{{ ansible_user }}/.zshrc"
+    force: true
+
+- name: Get vim config
+  become: no
+  get_url:
+    url: https://gitea.comprofix.com/mmckinnon/dotfiles/raw/branch/master/vim/vimrc
+    dest: "/home/{{ ansible_user }}/.vimrc"
+    force: true
+
+- name: Set shell zsh
+  user: 
+    name: "{{ ansible_user }}"
+    shell: /bin/zsh
+
+- name: Set moe theme for zsh
+  become: no
+  ansible.builtin.lineinfile:
+    path: "/home/{{ansible_user}}/.zshrc"
+    regexp: '^ZSH_THEME="dracula"'
+    line: 'ZSH_THEME="moe"'
+
+
+
+
+
 
 

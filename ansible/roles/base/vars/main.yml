@@ -12,3 +12,4 @@ install_packages: # Add addition packages here
   - nfs-common
   - cron
   - jq
+  - sudo
