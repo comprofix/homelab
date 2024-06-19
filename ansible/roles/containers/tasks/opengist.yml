@@ -1,0 +1,44 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'opengist'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ docker_configs }}/{{container_name}}"
+
+- name: Create the {{container_name}} container
+  docker_container:
+    name: opengist
+    image: ghcr.io/thomiceli/opengist:1.7
+    restart_policy: always
+    recreate: true
+    networks:
+      - name: proxy_network
+    volumes:
+      - "/mnt/nfs/docker/opengist:/opengist"
+    env:
+      OG_GITEA_CLIENT_KEY: "{{ OG_GITEA_KEY }}"
+      OG_GITEA_SECRET: "{{ OG_GITEA_SECRET }}"
+      # URL of the Gitea instance. Default: https://gitea.com/
+      OG_GITEA_URL: "https://gitea.comprofix.com"
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.com.j2
+    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+  vars:
+    domain: gist.comprofix.com
+    port: 6157
+    protocol: http
+
+- name: Restart nginx
+  community.docker.docker_container_exec:
+    container: nginx
+    command: nginx -s reload

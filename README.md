@@ -55,6 +55,11 @@ Homelab deployed as Infrastructure as Code (IaC) using ansible and terraform. Us
         <td>Self-Hosted Runner Service</td>
     </tr>
     <tr>
+        <td><img vertical-align=baseline width="32" src="https://raw.githubusercontent.com/thomiceli/opengist/a9dd531f676d01b93bb6bd70751a69382ca563b0/public/opengist.svg"></td>
+        <td><a href="https://github.com/thomiceli/opengist">Opengist</a></td>
+        <td>Opengist is a self-hosted pastebin powered by Git</td>
+    </tr>
+    <tr>
         <td><img vertical-align=baseline width="32" src="https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/png/homepage.png"></td>
         <td><a href="https://gethomepage.dev/latest/">Homepage</a></td>
         <td>A modern, fully static, fast, secure fully proxied, highly customizable application dashboard with integrations for over 100 services and translations into multiple languages. Easily configured via YAML files or through docker label discovery</td>
