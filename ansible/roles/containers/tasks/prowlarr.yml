@@ -36,8 +36,5 @@
     domain: prowlarr.comprofix.xyz
     port: 9696
     protocol: http
-
-- name: Restart nginx
-  community.docker.docker_container_exec:
-    container: nginx
-    command: nginx -s reload
+  notify: 
+    - reload nginx

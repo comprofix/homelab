@@ -36,8 +36,5 @@
     domain: portainer.comprofix.xyz
     port: 9443
     protocol: https
-
-- name: Restart nginx
-  community.docker.docker_container_exec:
-    container: nginx
-    command: nginx -s reload
+  notify: 
+    - reload nginx

@@ -31,8 +31,9 @@
       certificates:
       - name: 'comprofix.com'
       - name: 'comprofix.xyz' 
-    - nginx
     - containers
+    - nginx
+
   tags: containers_install
     
 - hosts: omada

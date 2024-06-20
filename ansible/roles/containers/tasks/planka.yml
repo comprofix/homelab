@@ -36,9 +36,6 @@
     domain: planka.comprofix.xyz
     port: 1337
     protocol: http
-
-- name: Restart nginx
-  community.docker.docker_container_exec:
-    container: nginx
-    command: nginx -s reload
+  notify: 
+    - reload nginx
 
