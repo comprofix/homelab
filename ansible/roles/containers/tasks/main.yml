@@ -1,9 +1,5 @@
 ---
 # tasks file for containers
-- name: "Deploy Portainer"
-  import_tasks: tasks/portainer.yml
-  tags: portainer_install
-
 - name: Deploy mariadb
   import_tasks: tasks/mariadb.yml
   tags: mariadb_install
@@ -11,6 +7,14 @@
 - name: Deploy Postgres
   import_tasks: tasks/postgres.yml
   tags: postgres_install
+
+- name: Deploy homepage
+  import_tasks: tasks/homepage.yml
+  tags: homepage_install
+
+- name: "Deploy Portainer"
+  import_tasks: tasks/portainer.yml
+  tags: portainer_install
 
 - name: Deploy opengist
   import_tasks: tasks/opengist.yml
@@ -71,10 +75,6 @@
 - name: Deploy planka
   import_tasks: tasks/planka.yml
   tags: planka_install
-
-- name: Deploy homepage
-  import_tasks: tasks/homepage.yml
-  tags: homepage_install
 
 - name: Deploy osTicket
   import_tasks: tasks/osticket.yml

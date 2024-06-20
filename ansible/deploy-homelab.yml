@@ -27,11 +27,11 @@
       - name: Data share
         path: /mnt/nfs/data
         src: truenas.comprofix.xyz:/mnt/datapool/data
-    - nginx
     - role: certbot
       certificates:
       - name: 'comprofix.com'
       - name: 'comprofix.xyz' 
+    - nginx
     - containers
   tags: containers_install
     
@@ -40,10 +40,10 @@
   roles:
     - base
     - docker
-    - nginx
     - role: certbot
       certificates:
       - name: 'omada.comprofix.xyz'
+    - nginx
     - omada
   tags: omada_install
 

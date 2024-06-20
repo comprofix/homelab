@@ -13,3 +13,7 @@ install_packages: # Add addition packages here
   - cron
   - jq
   - sudo
+  - logwatch
+  - sendemail
+  - libio-socket-ssl-perl
+  - libnet-ssleay-perl
