@@ -66,17 +66,6 @@
   tags: jellyfin_install
 
 
-- hosts: dev
-  become: yes
-  roles:
-    - docker
-    - role: certbot
-      certificates:
-      - name: 'comprofix.com'
-      - name: 'comprofix.xyz' 
-    - containers
-    - nginx
-
 
 
 
