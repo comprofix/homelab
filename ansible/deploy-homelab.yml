@@ -44,8 +44,8 @@
     - role: certbot
       certificates:
       - name: 'omada.comprofix.xyz'
-    - nginx
     - omada
+    - nginx
   tags: omada_install
 
 - hosts: jellyfin
@@ -64,6 +64,18 @@
       - name: 'jellyfin.comprofix.xyz'
     - jellyfin
   tags: jellyfin_install
+
+
+- hosts: dev
+  become: yes
+  roles:
+    - docker
+    - role: certbot
+      certificates:
+      - name: 'comprofix.com'
+      - name: 'comprofix.xyz' 
+    - containers
+    - nginx
 
 
 

@@ -21,7 +21,7 @@
   docker_container:
     name: nginx
     image: nginx
-    restart_policy: always
+    restart_policy: never
     recreate: true
     networks:
       - name: proxy_network

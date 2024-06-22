@@ -14,7 +14,7 @@
   docker_container:
     name: omada
     image: mbentley/omada-controller:5.13
-    restart_policy: always
+    restart_policy: never
     recreate: true
     network_mode: host
     env:
@@ -45,8 +45,5 @@
     domain: omada.comprofix.xyz
     port: 8043
     protocol: https
-
-- name: Restart nginx
-  community.docker.docker_container_exec:
-    container: nginx
-    command: nginx -s reload
+  notify: 
+    - reload nginx

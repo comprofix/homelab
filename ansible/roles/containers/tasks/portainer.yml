@@ -15,7 +15,7 @@
   docker_container:
     name: portainer
     image: portainer/portainer-ce:2.20.3
-    restart_policy: always
+    restart_policy: never
     recreate: true
     networks:
       - name: proxy_network

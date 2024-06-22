@@ -15,7 +15,7 @@
   docker_container:
     name: mealie
     image: ghcr.io/mealie-recipes/mealie:v1.9.0
-    restart_policy: always
+    restart_policy: never
     networks:
       - name: proxy_network
     env:

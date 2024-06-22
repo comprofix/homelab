@@ -15,7 +15,7 @@
   docker_container:
     name: sabnzbd
     image: linuxserver/sabnzbd:4.3.2
-    restart_policy: always
+    restart_policy: never
     recreate: true
     networks:
       - name: proxy_network

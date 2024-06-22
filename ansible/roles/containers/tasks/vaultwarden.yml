@@ -15,7 +15,7 @@
   docker_container:
     name: vaultwarden
     image: vaultwarden/server:1.30.5
-    restart_policy: always
+    restart_policy: never
     recreate: true
     networks:
       - name: proxy_network

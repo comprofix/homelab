@@ -15,7 +15,7 @@
   docker_container:
     name: osticket
     image: devinsolutions/osticket:1.17.5
-    restart_policy: always
+    restart_policy: never
     recreate: true
     networks:
       - name: proxy_network

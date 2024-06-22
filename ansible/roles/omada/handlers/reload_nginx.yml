@@ -1,0 +1,12 @@
+---
+- name: nginx status
+  docker_container_info:
+    name: nginx
+  register: nginx_status
+
+- name: reload nginx
+  community.docker.docker_container_exec:
+     container: nginx
+     command: nginx -s reload
+  when: nginx_status.container.State.Status == 'running'
+

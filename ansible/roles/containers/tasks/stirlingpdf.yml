@@ -22,7 +22,7 @@
   docker_container:
     name: stirlingpdf
     image: ghcr.io/stirling-tools/s-pdf:0.26.1
-    restart_policy: always
+    restart_policy: never
     recreate: true
     networks:
       - name: proxy_network
