@@ -14,7 +14,7 @@
   docker_container:
     name: omada
     image: mbentley/omada-controller:5.13
-    restart_policy: never
+    restart_policy: no
     recreate: true
     network_mode: host
     env:

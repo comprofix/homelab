@@ -15,7 +15,7 @@
   docker_container:
     name: "{{container_name}}"
     image: ghcr.io/linuxserver/mariadb:10.11.8
-    restart_policy: never
+    restart_policy: no
     recreate: true
     ports:
       - 3306:3306

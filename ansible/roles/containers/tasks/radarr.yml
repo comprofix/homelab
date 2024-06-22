@@ -15,7 +15,7 @@
   docker_container:
     name: radarr
     image: linuxserver/radarr:5.7.0
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network

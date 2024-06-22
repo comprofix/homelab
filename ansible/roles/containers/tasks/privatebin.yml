@@ -14,7 +14,7 @@
   docker_container:
     name: privatebin
     image: ghcr.io/privatebin/nginx-fpm-alpine:latest@sha256:214f5cd2d32aae97e0fa290c9b873a8316c2d9a87b52a7ea2f3a8d563771a256
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network

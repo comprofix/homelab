@@ -64,7 +64,7 @@
     name: invoiceninja-nginx
     image: nginx:1.27.0
     env_file: /mnt/nfs/docker/invoiceninja/stack.env
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network
@@ -78,7 +78,7 @@
     name: invoiceninja-app
     image: invoiceninja/invoiceninja:5
     env_file: /mnt/nfs/docker/invoiceninja/stack.env
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network

@@ -14,7 +14,7 @@
   docker_container:
     name: opengist
     image: ghcr.io/thomiceli/opengist:1.7
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network

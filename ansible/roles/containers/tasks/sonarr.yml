@@ -15,7 +15,7 @@
   docker_container:
     name: sonarr
     image: linuxserver/sonarr:4.0.5
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network

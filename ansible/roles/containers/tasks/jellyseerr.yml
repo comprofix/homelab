@@ -15,7 +15,7 @@
   docker_container:
     name: jellyseerr
     image: fallenbagel/jellyseerr:1.9.2 
-    restart_policy: never
+    restart_policy: no
     recreate: true
     networks:
       - name: proxy_network
