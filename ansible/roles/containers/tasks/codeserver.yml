@@ -1,16 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'codeserver'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
+    - "/mnt/nfs/docker/codeserver"
+    - "/mnt/nfs/docker/codeserver/config"
 
-- name: Create the {{container_name}} container
+- name: Create the code-server container
   docker_container:
     name: codeserver
     image: ghcr.io/linuxserver/code-server:4.90.2
@@ -24,14 +21,16 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/codeserver.conf"
   vars:
-    domain: codeserver.comprofix.xyz
-    port: 8443
+    domain: "{{ 'codeserver.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'codeserver.comprofix.xyz' }}"
+    port: 8080
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

@@ -1,26 +1,28 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'nginx'
+- name: Removed old configs - containers should supply fresh configs.
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/mnt/nfs/docker/nginx"
 
-- name: Create directories
+- name: Create config folders
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
-
+    - "/mnt/nfs/docker/nginx"
+    - "/mnt/nfs/docker/nginx/config"
 
 - name: Create proxy docker network
   docker_network:
     name: "proxy_network"
     state: present
 
-- name: Create the {{container_name}} container
+- name: Create the nginx container
   docker_container:
     name: nginx
-    image: nginx
+    image: nginx:1.27
     restart_policy: no
     recreate: true
     networks:
