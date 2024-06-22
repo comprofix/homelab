@@ -1,23 +1,8 @@
 ---
-- hosts: all
-  become: yes
-  roles:
-    - base
-  tags: base_install
-
-- hosts: gitea
-  become: yes
-  roles:
-    - base
-    - role: certbot    
-      certificates:
-        - name: gitea.comprofix.com
-    - role: gitea
-  tags: gitea_install
-
 - hosts: containers
   become: yes
   roles:
+    - base
     - docker
     - role: nfs
       mounts:
@@ -33,48 +18,8 @@
       - name: 'comprofix.xyz' 
     - containers
     - nginx
-
   tags: containers_install
-    
-- hosts: omada
-  become: yes
-  roles:
-    - base
-    - docker
-    - role: certbot
-      certificates:
-      - name: 'omada.comprofix.xyz'
-    - omada
-    - nginx
-  tags: omada_install
 
-- hosts: jellyfin
-  become: yes
-  roles:
-    - base
-    - role: nfs
-      mounts:
-      - name: Data share
-        path: /mnt/nfs/data
-        src: truenas.comprofix.xyz:/mnt/datapool/data
-    - docker
-    - nginx
-    - role: certbot
-      certificates:
-      - name: 'jellyfin.comprofix.xyz'
-    - jellyfin
-  tags: jellyfin_install
-
-- hosts: dev
-  become: yes
-  roles:
-    - docker
-    - role: certbot
-      certificates:
-      - name: 'comprofix.com'
-      - name: 'comprofix.xyz' 
-    - containers
-    - nginx
 
 
 

@@ -1,0 +1,12 @@
+---
+- hosts: omada
+  become: yes
+  roles:
+    - base
+    - docker
+    - role: certbot
+      certificates:
+      - name: 'omada.comprofix.xyz'
+    - omada
+    - nginx
+  tags: omada_install

@@ -1,0 +1,17 @@
+---
+- hosts: jellyfin
+  become: yes
+  roles:
+    - base
+    - role: nfs
+      mounts:
+      - name: Data share
+        path: /mnt/nfs/data
+        src: truenas.comprofix.xyz:/mnt/datapool/data
+    - docker
+    - nginx
+    - role: certbot
+      certificates:
+      - name: 'jellyfin.comprofix.xyz'
+    - jellyfin
+  tags: jellyfin_install

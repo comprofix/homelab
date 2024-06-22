@@ -1,0 +1,10 @@
+---
+- hosts: gitea
+  become: yes
+  roles:
+    - base
+    - role: certbot    
+      certificates:
+        - name: gitea.comprofix.com
+    - role: gitea
+  tags: gitea_install
