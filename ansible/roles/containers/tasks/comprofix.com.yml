@@ -1,0 +1,22 @@
+---
+- name: Create the comprofix container
+  docker_container:
+    name: comprofix
+    image: gitea.comprofix.com/mmckinnon/comprofix.com:1.0
+    restart_policy: no
+    recreate: true
+    networks:
+      - name: proxy_network
+  register: container
+
+- name: Setup reverse proxy
+  template:
+    src: templates/nginx/comprofix.com.j2
+    dest: "/mnt/nfs/docker/nginx/config/comprofix.com.conf"
+  vars:
+    domain: "{{ 'comprofix.dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.com' }}"
+    port: 80
+    protocol: http
+    cert: "{{ 'dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.com' }}"
+  notify: 
+    - reload nginx

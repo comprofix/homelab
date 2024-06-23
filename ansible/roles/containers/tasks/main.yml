@@ -1,5 +1,11 @@
 ---
 # tasks file for containers
+- name: Deploy comprofix.com
+  import_tasks: tasks/comprofix.com.yml
+  tags: comprofix_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
+
+
 - name: Deploy mariadb
   import_tasks: tasks/mariadb.yml
   tags: mariadb_install

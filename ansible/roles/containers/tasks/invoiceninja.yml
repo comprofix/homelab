@@ -68,6 +68,7 @@
       - /mnt/nfs/docker/invoiceninja/config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf
       - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
       - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
+  register: container
 
 - name: Create the invoiceninja-app container
   docker_container:
@@ -82,8 +83,7 @@
       - /mnt/nfs/docker/invoiceninja/config/hosts:/etc/hosts
       - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
       - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
-  register: container
-
+  
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
