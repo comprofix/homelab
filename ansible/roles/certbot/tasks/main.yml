@@ -1,4 +1,14 @@
 ---
+- name: Remove old certficates
+  file:
+    path: "/etc/letsencrypt"
+    state: absent
+  
+- name: Create folder for certificates
+  file:
+    path: "/etc/letsencrypt"
+    state: directory
+
 - name: Install Certbot
   package: 
     name:

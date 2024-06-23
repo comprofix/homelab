@@ -11,8 +11,8 @@ server {
     http2 on;
     server_name {{domain}}; # REPLACE HERE
 
-    ssl_certificate /etc/letsencrypt/live/comprofix.xyz/fullchain.pem; # REPLACE HERE
-    ssl_certificate_key /etc/letsencrypt/live/comprofix.xyz/privkey.pem; # REPLACE HERE
+    ssl_certificate /etc/letsencrypt/live/{{cert}}/fullchain.pem; # REPLACE HERE
+    ssl_certificate_key /etc/letsencrypt/live/{{cert}}/privkey.pem; # REPLACE HERE
 
     location / {
         proxy_set_header X-Real-IP $remote_addr;
@@ -20,7 +20,7 @@ server {
         proxy_set_header X-NginX-Proxy true;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
-        proxy_pass {{protocol}}://{{container_name}}:{{port}}/;
+        proxy_pass {{protocol}}://{{ container.container.Name | replace("/","") }}:{{port}}/;
         proxy_ssl_session_reuse off;
         proxy_set_header Host $http_host;
         proxy_pass_header Server;

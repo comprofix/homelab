@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'readarr'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/readarr"
+    - "/mnt/nfs/docker/readarr/config"
   
-- name: Create the {{container_name}} container
+- name: Create the readarr container
   docker_container:
     name: readarr
     image: ghcr.io/linuxserver/readarr:develop@sha256:b8aa94ea98b0caf90f94e4bd0f84a5631e3dfcb4b10c927d4516843b95285985
@@ -27,14 +23,16 @@
     volumes:
       - /mnt/nfs/docker/readarr/config/:/config
       - /mnt/nfs/data/:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/readarr.conf"
   vars:
-    domain: readarr.comprofix.xyz
+    domain: "{{ 'readarr.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'readarr.comprofix.xyz' }}"
     port: 8787
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

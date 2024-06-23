@@ -1,17 +1,13 @@
----
-- name: Set Facts
-  set_fact:
-    container_name: 'jellyseerr'
-    
+---    
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/jellyseerr"
+    - "/mnt/nfs/docker/jellyseerr/config"
   
-- name: Create the {{container_name}} container
+- name: Create the jellyseerr container
   docker_container:
     name: jellyseerr
     image: fallenbagel/jellyseerr:1.9.2 
@@ -25,14 +21,16 @@
       TZ: "Australia/Brisbane"
     volumes:
       - /mnt/nfs/docker/jellyseerr/config:/app/config 
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/jellyseerr.conf"
   vars:
-    domain: jellyseerr.comprofix.xyz
+    domain: "{{ 'jellyseerr.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'jellyseerr.comprofix.xyz' }}"
     port: 5055
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

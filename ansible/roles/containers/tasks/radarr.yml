@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'radarr'
-    
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/radarr"
+    - "/mnt/nfs/docker/radarr/config"
   
-- name: Create the {{container_name}} container
+- name: Create the radarr container
   docker_container:
     name: radarr
     image: linuxserver/radarr:5.7.0
@@ -27,14 +23,16 @@
     volumes:
       - /mnt/nfs/docker/radarr/config:/config
       - /mnt/nfs/data:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/radarr.conf"
   vars:
-    domain: radarr.comprofix.xyz
+    domain: "{{ 'radarr.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'radarr.comprofix.xyz' }}"
     port: 7878
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

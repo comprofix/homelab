@@ -1,41 +1,35 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'gitea-runner'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/gitea-runner"
+    - "/mnt/nfs/docker/gitea-runner/config"
 
 - name: Check that config.yaml exists
   stat:
-    path: "{{ docker_configs }}/{{container_name}}/config/config.yaml"
+    path: "/mnt/nfs/docker/gitea-runner/config/config.yaml"
   register: configyaml
 
 - name: Create config.yaml file
   file:
-    path: "{{ docker_configs }}/{{container_name}}/config/config.yaml"
+    path: "/mnt/nfs/docker/gitea-runner/config/config.yaml"
     state: touch
     mode: '0600'
     access_time: preserve
     modification_time: preserve
   when: configyaml.stat.exists == False
 
-- name: Create the {{container_name}} container
+- name: Create the gitea-runner container
   docker_container:
     name: gitea-runner
     image: gitea/act_runner:0.2.10
     restart_policy: no
     recreate: true
-    networks:
-      - name: traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - "{{ docker_configs }}/{{container_name}}/config/config.yaml:/config.yaml"
+      - "/mnt/nfs/docker/gitea-runner/config/config.yaml:/config.yaml"
     env:
       CONFIG_FILE: "/config.yaml"
       GITEA_INSTANCE_URL: "https://gitea.comprofix.com"

@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'sonarr'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/sonarr"
+    - "/mnt/nfs/docker/sonarr/config"
   
-- name: Create the {{container_name}} container
+- name: Create the sonarr container
   docker_container:
     name: sonarr
     image: linuxserver/sonarr:4.0.5
@@ -27,14 +23,16 @@
     volumes:
       - /mnt/nfs/docker/sonarr/config/:/config
       - /mnt/nfs/data:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/sonarr.conf"
   vars:
-    domain: sonarr.comprofix.xyz
+    domain: "{{ 'sonarr.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'sonarr.comprofix.xyz' }}"
     port: 8989
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

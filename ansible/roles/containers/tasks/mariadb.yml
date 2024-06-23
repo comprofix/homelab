@@ -8,12 +8,12 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/mariadb"
+    - "/mnt/nfs/docker/mariadb/config"
   
-- name: Create the {{container_name}} container
+- name: Create the mariadb container
   docker_container:
-    name: "{{container_name}}"
+    name: "mariadb"
     image: ghcr.io/linuxserver/mariadb:10.11.8
     restart_policy: no
     recreate: true
@@ -25,5 +25,5 @@
       MYSQL_ROOT_PASSWORD: "{{MYSQL_ROOT_PASSWORD}}"
       TZ: "Australia/Brisbane"
     volumes:
-      - "{{ docker_configs }}/{{container_name}}/config:/config"
+      - "/mnt/nfs/docker/mariadb/config:/config"
     

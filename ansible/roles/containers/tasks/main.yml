@@ -3,22 +3,27 @@
 - name: Deploy mariadb
   import_tasks: tasks/mariadb.yml
   tags: mariadb_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Postgres
   import_tasks: tasks/postgres.yml
   tags: postgres_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy homepage
   import_tasks: tasks/homepage.yml
   tags: homepage_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: "Deploy Portainer"
   import_tasks: tasks/portainer.yml
   tags: portainer_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy opengist
   import_tasks: tasks/opengist.yml
   tags: gists_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy dozzle
   import_tasks: tasks/dozzle.yml
@@ -27,75 +32,94 @@
 - name: Gitea Runner
   import_tasks: tasks/gitea-runner.yml
   tags: gitea_runner_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Mealie
   import_tasks: tasks/mealie.yml
   tags: mealie_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy sabnzb
   import_tasks: tasks/sabnzbd.yml
   tags: sabnzbd_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Sonarr
   import_tasks: tasks/sonarr.yml
   tags: sonarr_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Radarr
   import_tasks: tasks/radarr.yml
   tags: radarr_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Readarr
   import_tasks: tasks/readarr.yml
   tags: readarr_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Prowlarr
   import_tasks: tasks/prowlarr.yml
   tags: prowlarr_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Lidarr
   import_tasks: tasks/lidarr.yml
   tags: lidarr_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Jellyseerr
   import_tasks: tasks/jellyseerr.yml
   tags: jellyseerr_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy speedtest
   import_tasks: tasks/speedtest.yml
   tags: speedtest_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy pykms
   import_tasks: tasks/pykms.yml
   tags: pykms_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
       
 - name: Deploy vaultwarden
   import_tasks: tasks/vaultwarden.yml
   tags: vaultwarden_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy planka
   import_tasks: tasks/planka.yml
   tags: planka_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy osTicket
   import_tasks: tasks/osticket.yml
   tags: osticket_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy qbittorrent
   import_tasks: tasks/qbittorrent.yml
   tags: qbittorrent_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Stirling PDF
   import_tasks: tasks/stirlingpdf.yml
   tags: stirlingpdf_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Code-Server
   import_tasks: tasks/codeserver.yml
   tags: codeserver_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy PrivateBin
   import_tasks: tasks/privatebin.yml
   tags: privatebin_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy Invoiceninja
   import_tasks: tasks/invoiceninja.yml
   tags: invoiceninja_install
+  when: inventory_hostname != 'dev.comprofix.xyz'

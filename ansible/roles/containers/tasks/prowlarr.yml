@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'prowlarr'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/prowlarr"
+    - "/mnt/nfs/docker/prowlarr/config"
   
-- name: Create the {{container_name}} container
+- name: Create the prowlarr container
   docker_container:
     name: prowlarr
     image: linuxserver/prowlarr:1.19.0
@@ -27,14 +23,16 @@
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:prowlarr"
     volumes:
       - /mnt/nfs/docker/prowlarr/config:/config
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/prowlarr.conf"
   vars:
-    domain: prowlarr.comprofix.xyz
+    domain: "{{ 'prowlarr.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'prowlarr.comprofix.xyz' }}"
     port: 9696
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

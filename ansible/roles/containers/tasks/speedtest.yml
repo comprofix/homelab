@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'speedtest'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/speedtest"
+    - "/mnt/nfs/docker/speedtest/config"
 
-- name: Create the {{container_name}} container
+- name: Create the speedtest container
   docker_container:
     name: speedtest
     image: lscr.io/linuxserver/speedtest-tracker:0.20.7
@@ -33,14 +29,16 @@
     volumes:
       - /mnt/nfs/docker/speedtest/config:/config
       - /mnt/nfs/docker/speedtest/web:/etc/ssl/web
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/speedtest.conf"
   vars:
-    domain: speedtest.comprofix.xyz
+    domain: "{{ 'speedtest.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'speedtest.comprofix.xyz' }}"
     port: 80
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

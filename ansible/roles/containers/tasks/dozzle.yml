@@ -1,16 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'dozzle'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
+    - "/mnt/nfs/docker/dozzle"
+    - "/mnt/nfs/docker/dozzle/config"
 
-- name: Create the {{container_name}} container
+- name: Create the dozzle container
   docker_container:
     name: dozzle
     image: amir20/dozzle:v7.0.7
@@ -23,14 +20,16 @@
     env:
       DOZZLE_LEVEL: "trace"
       DOZZLE_REMOTE_HOST: "tcp://docker.comprofix.xyz:2375,tcp://omada-server.comprofix.xyz:2375"
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/dozzle.conf"
   vars:
-    domain: dozzle.comprofix.xyz
+    domain: "{{ 'dozzle.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'dozzle.comprofix.xyz' }}"
     port: 8080
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

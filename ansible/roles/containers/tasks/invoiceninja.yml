@@ -1,15 +1,11 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'invoiceninja'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/invoiceninja/"
+    - "/mnt/nfs/docker/invoiceninja/config"
 
 - name: "create stack.env"
   copy:
@@ -86,20 +82,19 @@
       - /mnt/nfs/docker/invoiceninja/config/hosts:/etc/hosts
       - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
       - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
-
-- name: Set Facts
-  set_fact:
-    container_name: 'invoiceninja-nginx'
+  register: container
 
 - name: Setup reverse proxy
   template:
-    src: templates/nginx/comprofix.com.j2
+    src: templates/nginx/comprofix.xyz.j2
     dest: "/mnt/nfs/docker/nginx/config/invoiceninja.conf"
   vars:
-    domain: invoice.comprofix.com
+    domain: "{{ 'invoice.dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'invoice.comprofix.com' }}"
     port: 80
     protocol: http
+    cert: "{{ 'dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.com' }}"
   notify: 
     - reload nginx
+  
 
     

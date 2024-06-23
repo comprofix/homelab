@@ -1,16 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'opengist'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
+    - "/mnt/nfs/docker/opengist"
+    - "/mnt/nfs/docker/opengist/config"
 
-- name: Create the {{container_name}} container
+- name: Create the opengist container
   docker_container:
     name: opengist
     image: ghcr.io/thomiceli/opengist:1.7
@@ -28,14 +25,16 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
+  register: container
 
 - name: Setup reverse proxy
   template:
-    src: templates/nginx/comprofix.com.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/opengist.conf"
   vars:
-    domain: gist.comprofix.com
+    domain: "{{ 'gist.dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'gist.comprofix.com' }}"
     port: 6157
     protocol: http
+    cert: "{{ 'dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.com' }}"
   notify: 
     - reload nginx
