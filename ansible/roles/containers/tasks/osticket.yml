@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'osticket'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/osticket"
+    - "/mnt/nfs/docker/osticket/config"
 
-- name: Create the {{container_name}} container
+- name: Create the osticket container
   docker_container:
     name: osticket
     image: devinsolutions/osticket:1.17.5
@@ -26,6 +22,7 @@
       MYSQL_USER: "{{OST_DB_USER}}"
       MYSQL_PASSWORD: "{{OST_DB_PASSWORD}}"
       INSTALL_SECRET: "{{OST_SIRI}}"
+  register: container
 
 - name: Add tzdata to osTicket container
   community.docker.docker_container_exec:
@@ -59,11 +56,12 @@
 
 - name: Setup reverse proxy
   template:
-    src: templates/nginx/comprofix.com.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/osticket.conf"
   vars:
-    domain: helpdesk.comprofix.com
+    domain: "{{ 'helpdesk.dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'helpdesk.comprofix.com' }}"
     port: 80
     protocol: http
+    cert: "{{ 'dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.com' }}"
   notify: 
     - reload nginx

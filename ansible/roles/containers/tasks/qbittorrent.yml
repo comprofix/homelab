@@ -8,8 +8,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/qbittorrent"
+    - "/mnt/nfs/docker/qbittorrent/config"
 
 - name: Download VueTorrent
   git:
@@ -20,7 +20,7 @@
     single_branch: yes
     version: latest-release
 
-- name: Create the {{container_name}} container
+- name: Create the qbittorrent container
   docker_container:
     name: qbittorrent
     image: lscr.io/linuxserver/qbittorrent:20.04.1
@@ -41,14 +41,16 @@
       - /mnt/nfs/docker/qbittorrent/config:/config
       - /mnt/nfs/data:/data
       - /opt/vuetorrent:/vuetorrent
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/qbittorrent.conf"
   vars:
-    domain: qbittorrent.comprofix.xyz
+    domain: "{{ 'qbittorrent.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'qbittorrent.comprofix.xyz' }}"
     port: 8080
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

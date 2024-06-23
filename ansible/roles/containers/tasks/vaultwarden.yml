@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'vaultwarden'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/vaultwarden"
+    - "/mnt/nfs/docker/vaultwarden/config"
   
-- name: Create the {{container_name}} container
+- name: Create the vaultwarden container
   docker_container:
     name: vaultwarden
     image: vaultwarden/server:1.30.5
@@ -25,14 +21,16 @@
       TZ: "Australia/Brisbane"
     volumes:
       /mnt/nfs/docker/vaultwarden/data:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
-    src: templates/nginx/comprofix.com.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    src: templates/nginx/comprofix.xyz.j2
+    dest: "/mnt/nfs/docker/nginx/config/planka.conf"
   vars:
-    domain: vault.comprofix.com
+    domain: "{{ 'vault.dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'vault.comprofix.com' }}"
     port: 80
     protocol: http
+    cert: "{{ 'dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.com' }}"
   notify: 
     - reload nginx

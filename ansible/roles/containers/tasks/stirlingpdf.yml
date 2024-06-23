@@ -1,24 +1,20 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'stirlingpdf'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/stirlingpdf"
+    - "/mnt/nfs/docker/stirlingpdf/config"
 
-    #- name: Download tessdata
-    #git:
-    #repo: https://github.com/tesseract-ocr/tessdata.git
-    #dest: "/opt/tessdata"
-    #clone: yes
-    #update: yes
+- name: Download tessdata
+  git:
+    repo: https://github.com/tesseract-ocr/tessdata.git
+    dest: "/opt/tessdata"
+    clone: yes
+    update: yes
 
-- name: Create the {{container_name}} container
+- name: Create the stirlingpdf container
   docker_container:
     name: stirlingpdf
     image: ghcr.io/stirling-tools/s-pdf:0.26.1
@@ -35,14 +31,17 @@
     volumes:
       - /opt/tessdata:/usr/share/tessdata #Required for extra OCR languages
       - /mnt/nfs/docker/stirlingpdf/configs:/configs  
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/planka.conf"
   vars:
-    domain: stirlingpdf.comprofix.xyz
+    domain: "{{ 'stirlingpdf.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'stirlingpdf.comprofix.xyz' }}"
     port: 8080
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx
+

@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'sabnzbd'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/sabnzbd"
+    - "/mnt/nfs/docker/sabnzbd/config"
   
-- name: Create the {{container_name}} container
+- name: Create the sabnzbd container
   docker_container:
     name: sabnzbd
     image: linuxserver/sabnzbd:4.3.2
@@ -23,19 +19,21 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-      HOSTNAME: "sabnzbd.comprofix.xyz"
+      HOSTNAME: "{{ 'sabnzbd.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'sabnzbd.comprofix.xyz' }}"
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:sabnzbd"
     volumes:
       - /mnt/nfs/docker/sabnzbd/config:/config
       - /mnt/nfs/data:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/sabnzbd.conf"
   vars:
-    domain: sabnzbd.comprofix.xyz
+    domain: "{{ 'sabnzbd.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'sabnzbd.comprofix.xyz' }}"
     port: 8080
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

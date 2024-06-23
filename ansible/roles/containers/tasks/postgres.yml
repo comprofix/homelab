@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'postgres'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/postgres"
+    - "/mnt/nfs/docker/postgres/config"
 
-- name: Create the {{container_name}} container
+- name: Create the postgres container
   docker_container:
     name: postgres
     image: postgres:16-alpine

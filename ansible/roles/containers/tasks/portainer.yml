@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'portainer'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/portainer"
+    - "/mnt/nfs/docker/portainer/config"
   
-- name: Create the {{container_name}} container
+- name: Create the portainer container
   docker_container:
     name: portainer
     image: portainer/portainer-ce:2.20.3
@@ -27,14 +23,16 @@
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /mnt/nfs/docker/portainer/data:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/portainer.conf"
   vars:
-    domain: portainer.comprofix.xyz
+    domain: "{{ 'portainer.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'portainer.comprofix.xyz' }}"
     port: 9443
     protocol: https
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

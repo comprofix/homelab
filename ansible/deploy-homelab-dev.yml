@@ -2,20 +2,12 @@
 - hosts: dev
   become: yes
   roles:
-    #- base
-    #- docker
-    #- role: certbot
-    #  certificates:
-    #  - name: 'dev.comprofix.com'
-    #  - name: 'dev.comprofix.xyz' 
+    - base
+    - docker
+    - role: certbot
+      certificates:
+      - name: 'dev.comprofix.com'
+      - name: 'dev.comprofix.xyz' 
     - nginx
     - containers
   tags: dev_install
-
-
-
-
-
-
-  
-

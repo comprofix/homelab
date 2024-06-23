@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'pykms'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/pykms"
+    - "/mnt/nfs/docker/pykms/config"
   
-- name: Create the {{container_name}} container
+- name: Create the pykms container
   docker_container:
     name: pykms
     image: ghcr.io/py-kms-organization/py-kms:latest

@@ -29,7 +29,7 @@
     dest: "/mnt/nfs/docker/nginx/config/codeserver.conf"
   vars:
     domain: "{{ 'codeserver.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'codeserver.comprofix.xyz' }}"
-    port: 8080
+    port: 8443
     protocol: http
     cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 

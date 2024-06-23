@@ -112,6 +112,7 @@
 - name: Deploy Code-Server
   import_tasks: tasks/codeserver.yml
   tags: codeserver_install
+  when: inventory_hostname != 'dev.comprofix.xyz'
 
 - name: Deploy PrivateBin
   import_tasks: tasks/privatebin.yml

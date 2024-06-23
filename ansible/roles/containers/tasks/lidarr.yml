@@ -8,10 +8,10 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/lidarr"
+    - "/mnt/nfs/docker/lidarr/config"
   
-- name: Create the {{container_name}} container
+- name: Create the lidarr container
   docker_container:
     name: lidarr
     image: ghcr.io/linuxserver/lidarr:latest@sha256:a7d0282dcdbf5b11306cc4054c11b42252106b5e8494375231322822d31ac9f6
@@ -28,14 +28,16 @@
     volumes:
       - /mnt/nfs/docker/lidarr/config:/config
       - /mnt/nfs/data:/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/lidarr.conf"
   vars:
-    domain: lidarr.comprofix.xyz
+    domain: "{{ 'lidarr.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'lidarr.comprofix.xyz' }}"
     port: 8686
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx

@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'planka'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/planka"
+    - "/mnt/nfs/docker/planka/config"
   
-- name: Create the {{container_name}} container
+- name: Create the planka container
   docker_container:
     name: planka
     image: ghcr.io/plankanban/planka:1.19.1
@@ -20,22 +16,24 @@
     networks:
       - name: proxy_network
     env:
-      BASE_URL: "https://planka.comprofix.xyz"
+      BASE_URL: "{{ 'https://planka.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'https://planka.comprofix.xyz' }}"
       DATABASE_URL: "postgresql://{{PLANKA_USER}}:{{PLANKA_PASS}}@docker.comprofix.xyz/planka"
       SECRET_KEY: "{{PLANKA_SECRET_KEY}}"
     volumes:
       - /mnt/nfs/docker/planka/user-avatars:/app/public/user-avatars
       - /mnt/nfs/docker/planka/project-background-images:/app/public/project-background-images
       - /mnt/nfs/docker/planka/attachments:/app/public/attachments
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/planka.conf"
   vars:
-    domain: planka.comprofix.xyz
+    domain: "{{ 'planka.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'planka.comprofix.xyz' }}"
     port: 1337
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx
 

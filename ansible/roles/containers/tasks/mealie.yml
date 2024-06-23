@@ -1,17 +1,13 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'mealie'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ docker_configs }}/{{container_name}}"
-    - "{{ docker_configs }}/{{container_name}}/config"
+    - "/mnt/nfs/docker/mealie"
+    - "/mnt/nfs/docker/mealie/config"
 
-- name: Create the {{container_name}} container
+- name: Create the mealie container
   docker_container:
     name: mealie
     image: ghcr.io/mealie-recipes/mealie:v1.9.0
@@ -28,18 +24,20 @@
       RECIPE_LANDSCAPE_VIEW: "true"
       RECIPE_DISABLE_COMMENTS: "true"
       RECIPE_DISABLE_AMOUNT: "true"
-      BASE_URL: https://mealie.comprofix.xyz
+      BASE_URL: "{{ 'mealie.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'mealie.comprofix.xyz' }}"
       SMTP_HOST: comprofix-com.mail.protection.outlook.com
     volumes:
       - /mnt/nfs/docker/mealie/data/:/app/data
+  register: container
 
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/{{container_name}}.conf"
+    dest: "/mnt/nfs/docker/nginx/config/mealie.conf"
   vars:
-    domain: mealie.comprofix.xyz
+    domain: "{{ 'mealie.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'mealie.comprofix.xyz' }}"
     port: 9000
     protocol: http
+    cert: "{{ 'dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'comprofix.xyz' }}"
   notify: 
     - reload nginx
