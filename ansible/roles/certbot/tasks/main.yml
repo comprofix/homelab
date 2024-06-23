@@ -1,14 +1,4 @@
 ---
-- name: Remove old certficates
-  file:
-    path: "/etc/letsencrypt"
-    state: absent
-  
-- name: Create folder for certificates
-  file:
-    path: "/etc/letsencrypt"
-    state: directory
-
 - name: Install Certbot
   package: 
     name:
@@ -27,10 +17,19 @@
     dest: "/etc/letsencrypt/cloudflare.ini"
     mode: '0600'
 
-- name: Generate certificates
-  command: certbot certonly --noninteractive --agree-tos --email "{{ CF_API_EMAIL }}" --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d '{{ item.name }}' -d '*.{{ item.name }}'
-  become: yes
+- name: Check Certificates exist
+  stat:
+    path: "/etc/letsencrypt/live/{{item.name}}"
   with_items: "{{ certificates }}"
+  register: folder_check_results
+  ignore_errors: True
+
+
+- name: Generate certificates
+  command: certbot certonly --noninteractive --agree-tos --email "{{ CF_API_EMAIL }}" --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/cloudflare.ini -d '{{ item.item.name }}' -d '*.{{ item.item.name }}'
+  become: yes
+  with_items: "{{ folder_check_results.results }}"
+  when: item.stat.exists == False
 
 - name: Add cron job for certbot renewal
   cron:
@@ -53,20 +52,3 @@
     owner: root
     group: root
     mode: u=rwX,g=rX,o=rX
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

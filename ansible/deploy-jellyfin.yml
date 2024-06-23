@@ -9,9 +9,9 @@
         path: /mnt/nfs/data
         src: truenas.comprofix.xyz:/mnt/datapool/data
     - docker
-    - nginx
     - role: certbot
       certificates:
       - name: 'jellyfin.comprofix.xyz'
+    - nginx
     - jellyfin
   tags: jellyfin_install
