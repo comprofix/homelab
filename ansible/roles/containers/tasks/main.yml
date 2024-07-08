@@ -5,7 +5,6 @@
   tags: comprofix_install
   when: inventory_hostname != 'dev.comprofix.xyz'
 
-
 - name: Deploy mariadb
   import_tasks: tasks/mariadb.yml
   tags: mariadb_install
@@ -129,3 +128,14 @@
   import_tasks: tasks/invoiceninja.yml
   tags: invoiceninja_install
   when: inventory_hostname != 'dev.comprofix.xyz'
+
+- name: nginx status
+  docker_container_info:
+    name: nginx
+  register: nginx_status
+
+- name: reload nginx
+  community.docker.docker_container_exec:
+     container: nginx
+     command: nginx -s reload
+  when: nginx_status.container.State.Status == 'running'

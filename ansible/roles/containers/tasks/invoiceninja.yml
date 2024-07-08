@@ -55,6 +55,21 @@
       UPDATE_SECRET=secret
       SENTRY_LARAVEL_DSN=https://32f01ea994744fa08a0f688769cef78a@sentry.invoicing.co/ 
 
+
+- name: Create the invoiceninja-app container
+  docker_container:
+    name: invoiceninja-app
+    image: invoiceninja/invoiceninja:5
+    env_file: /mnt/nfs/docker/invoiceninja/stack.env
+    restart_policy: no
+    recreate: true
+    networks:
+      - name: proxy_network
+    volumes:
+      - /mnt/nfs/docker/invoiceninja/config/hosts:/etc/hosts
+      - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
+      - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
+
 - name: Create the invoiceninja-nginx container
   docker_container:
     name: invoiceninja-nginx
@@ -70,19 +85,7 @@
       - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
   register: container
 
-- name: Create the invoiceninja-app container
-  docker_container:
-    name: invoiceninja-app
-    image: invoiceninja/invoiceninja:5
-    env_file: /mnt/nfs/docker/invoiceninja/stack.env
-    restart_policy: no
-    recreate: true
-    networks:
-      - name: proxy_network
-    volumes:
-      - /mnt/nfs/docker/invoiceninja/config/hosts:/etc/hosts
-      - /mnt/nfs/docker/invoiceninja/docker/app/public:/var/www/app/public
-      - /mnt/nfs/docker/invoiceninja/docker/app/storage:/var/www/app/storage
+
   
 - name: Setup reverse proxy
   template:
