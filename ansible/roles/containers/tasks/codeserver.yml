@@ -10,7 +10,7 @@
 - name: Create the code-server container
   docker_container:
     name: codeserver
-    image: ghcr.io/linuxserver/code-server:4.90.3
+    image: ghcr.io/linuxserver/code-server:4.91.0
     restart_policy: no
     recreate: true
     networks:
