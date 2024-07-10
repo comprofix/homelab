@@ -13,7 +13,7 @@
 - name: Create the {{container_name}} container
   docker_container:
     name: omada
-    image: mbentley/omada-controller:5.13
+    image: mbentley/omada-controller:5.14
     restart_policy: no
     recreate: true
     network_mode: host
