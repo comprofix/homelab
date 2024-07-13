@@ -26,7 +26,7 @@
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/planka.conf"
+    dest: "/mnt/nfs/docker/nginx/config/vaultwarden.conf"
   vars:
     domain: "{{ 'vault.dev.comprofix.com' if inventory_hostname == 'dev.comprofix.xyz' else 'vault.comprofix.com' }}"
     port: 80
