@@ -7,12 +7,13 @@
     - "/mnt/nfs/docker/stirlingpdf"
     - "/mnt/nfs/docker/stirlingpdf/config"
 
-#- name: Download tessdata
-#  git:
-#    repo: https://github.com/tesseract-ocr/tessdata.git
-#    dest: "/opt/tessdata"
-#    clone: yes
-#    update: yes
+- name: Download tessdata
+  git:
+    repo: https://github.com/tesseract-ocr/tessdata.git
+    dest: "/opt/tessdata"
+    clone: yes
+    update: yes
+    force: yes
 
 - name: Create the stirlingpdf container
   docker_container:
@@ -36,7 +37,7 @@
 - name: Setup reverse proxy
   template:
     src: templates/nginx/comprofix.xyz.j2
-    dest: "/mnt/nfs/docker/nginx/config/planka.conf"
+    dest: "/mnt/nfs/docker/nginx/config/stirlingpdf.conf"
   vars:
     domain: "{{ 'stirlingpdf.dev.comprofix.xyz' if inventory_hostname == 'dev.comprofix.xyz' else 'stirlingpdf.comprofix.xyz' }}"
     port: 8080
