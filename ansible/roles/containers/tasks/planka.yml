@@ -10,7 +10,7 @@
 - name: Create the planka container
   docker_container:
     name: planka
-    image: ghcr.io/plankanban/planka:1.19.1
+    image: ghcr.io/plankanban/planka:1.19.2
     restart_policy: no
     recreate: true
     networks:
