@@ -10,7 +10,7 @@
 - name: Create the sonarr container
   docker_container:
     name: sonarr
-    image: linuxserver/sonarr:4.0.7
+    image: linuxserver/sonarr:4.0.8
     restart_policy: no
     recreate: true
     networks:
