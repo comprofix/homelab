@@ -1,0 +1,7 @@
+---
+- hosts: frigate
+  become: yes
+  roles:
+    - base
+    - docker
+  tags: frigate_install
