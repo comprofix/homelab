@@ -10,7 +10,7 @@
 - name: Create the readarr container
   docker_container:
     name: readarr
-    image: ghcr.io/linuxserver/readarr:develop@sha256:37e136c638dfa87869ff61876e5e165e8d93887dd1f6c0503582983029b37598
+    image: ghcr.io/linuxserver/readarr:develop@sha256:ff8d41fa9c5a18c2a34839a24499cea9e6e29ed61a0cc184281cf5b882867f12
     restart_policy: no
     recreate: true
     networks:
