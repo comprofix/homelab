@@ -15,3 +15,6 @@ jellyfin.comprofix.xyz
 
 [frigate]
 frigate.comprofix.com
+
+[proxmox]
+pve2.comprofix.xyz
