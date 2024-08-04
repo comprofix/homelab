@@ -55,7 +55,7 @@
         vga: std
         scsihw: 'virtio-scsi-single'
         scsi:
-          scsi0: "{{ storage_target }}:0,iothread=1,discard=on,import-from=/tmp/debian-12-generic-amd64.qcow2,format=raw"
+          scsi0: "{{ storage_target }}:0,iothread=1,discard=on,import-from={{ image.dest }},format=raw"
         net:
           net0: 'virtio,bridge=vmbr0,firewall=1,tag=10'
         ipconfig:
