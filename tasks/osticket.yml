@@ -1,0 +1,61 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/osticket"
+    - "{{ data_folder }}/osticket/config"
+
+- name: Create the osticket container
+  docker_container:
+    name: osticket
+    image: devinsolutions/osticket:1.17.5
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    env:
+      SMTP_HOST: "{{MAIL_HOST}}"
+      MYSQL_HOST: "{{MYSQL_HOST}}"
+      MYSQL_DATABASE: "{{OST_DATABASE}}"
+      MYSQL_USER: "{{OST_DB_USER}}"
+      MYSQL_PASSWORD: "{{OST_DB_PASSWORD}}"
+      INSTALL_SECRET: "{{OST_SIRI}}"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.osticket.rule: "Host(`helpdesk.comprofix.com`)"
+      traefik.http.routers.osticket.entrypoints: "https"
+      traefik.http.routers.osticket.tls: "true"
+      traefik.http.services.osticket.loadbalancer.server.port: "80"
+      traefik.http.services.osticket.loadbalancer.server.scheme: "http"
+
+- name: Add tzdata to osTicket container
+  community.docker.docker_container_exec:
+    container: osticket
+    command: apk add tzdata
+  
+- name: Set container Timezone
+  community.docker.docker_container_exec:
+    container: osticket
+    command: "ln -s /usr/share/zoneinfo/Australia/Brisbane /etc/localtime"
+
+- name: Set PHP Timezone
+  community.docker.docker_container_exec:
+    container: osticket
+    command: "sed -i 's|UTC|Australia/Brisbane|g' /usr/local/etc/php/conf.d/php-osticket.ini"
+
+- name: Patch mysqli.php for timezone
+  community.docker.docker_container_exec:
+    container: osticket
+    command: "sed -i 's|system_time_zone|time_zone|g' /var/www/html/include/mysqli.php"
+
+- name: Clear ost_sessions table
+  mysql_query:
+    login_host: "{{MYSQL_HOST}}"
+    login_user: "{{OST_DB_USER}}"
+    login_password: "{{OST_DB_PASSWORD}}"
+    login_db: "{{OST_DATABASE}}"
+    query: 
+      - USE comprofix_ost; 
+      - TRUNCATE TABLE ost_session;

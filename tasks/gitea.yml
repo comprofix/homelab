@@ -1,0 +1,134 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/gitea"
+    - "{{ data_folder }}/gitea/data"
+    - "{{ data_folder }}/gitea/db"
+
+- name: Create MySQL DB for Gitea
+  docker_container:
+    name: gitea_db
+    image: mysql:9
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ gitea_db_root_password }}"
+      MYSQL_USER: "{{ gitea_db_user }}"
+      MYSQL_PASSWORD: "{{ gitea_db_password }}"
+      MYSQL_DATABASE: gitea
+    volumes:
+      - "{{ data_folder }}/gitea/db:/var/lib/mysql"
+
+- name: Create the Gitea container
+  docker_container:
+    name: gitea
+    image: gitea/gitea:1.24
+    restart_policy: unless-stopped
+    recreate: true
+    # dns_servers:
+    #   - 10.10.10.1
+    #   - 127.0.0.11
+    networks:
+      - name: proxy
+    ports:
+      - "2222:22"
+    env:
+      PUID: "1001"
+      PGID: "1001"
+      TZ: "Australia/Brisbane"
+    volumes:
+      - "{{ data_folder }}/gitea/data:/data"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gitea.rule: "Host(`git.comprofix.com`)"
+      traefik.http.routers.gitea.entrypoints: "https"
+      traefik.http.routers.gitea.tls: "true"
+      traefik.http.routers.gitea.service: "gitea"
+      traefik.http.services.gitea.loadbalancer.server.port: "3000"
+  register: container_gitea
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/gitea-runner"
+    - "{{ data_folder }}/gitea-runner/config"
+
+- name: Check that config.yaml exists
+  stat:
+    path: "{{ data_folder }}/gitea-runner/config/config.yaml"
+  register: configyaml
+
+- name: Create config.yaml file
+  file:
+    path: "{{ data_folder }}/gitea-runner/config/config.yaml"
+    state: touch
+    mode: "0600"
+    access_time: preserve
+    modification_time: preserve
+  when: configyaml.stat.exists == False
+
+- name: Create the gitea-runner container
+  docker_container:
+    name: gitea-runner
+    image: gitea/act_runner:0.2.13
+    restart_policy: unless-stopped
+    recreate: true
+    # dns_servers:
+    #   - 10.10.10.1
+    #   - 127.0.0.11
+    volumes:
+      - "/etc/resolv.conf:/etc/resolv.conf:ro"
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "{{ data_folder }}/gitea-runner/config/config.yaml:/config.yaml"
+      - "/etc/hosts:/etc/hosts:ro"
+    env:
+      CONFIG_FILE: "/config.yaml"
+      GITEA_INSTANCE_URL: "https://git.comprofix.com"
+      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ GITEA_RUNNER_TOKEN }}"
+      GITEA_RUNNER_NAME: "gitea-runner"
+      GITEA_RUNNER_LABELS: "alpine-latest:docker://alpine:latest,ubuntu-latest:docker://node:22-trixie,vps-latest:docker://git.comprofix.com/mmckinnon/debian-latest:2025.08.31-093853"
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/opengist"
+
+- name: Create the opengist container
+  docker_container:
+    name: opengist
+    image: ghcr.io/thomiceli/opengist:1.10
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    # dns_servers:
+    #   - 10.10.10.1
+    #   - 127.0.0.11
+    volumes:
+      - "{{ data_folder }}/opengist:/opengist"
+    env:
+      OG_GITEA_CLIENT_KEY: "{{ OG_GITEA_KEY }}"
+      OG_GITEA_SECRET: "{{ OG_GITEA_SECRET }}"
+      # URL of the Gitea instance. Default: https://gitea.com/
+      OG_GITEA_URL: "https://git.comprofix.com"
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.opengist.rule: "Host(`gist.comprofix.com`)"
+      traefik.http.routers.opengist.entrypoints: "https"
+      traefik.http.routers.opengist.tls: "true"
+      traefik.http.routers.opengist.service: "opengist"
+      traefik.http.services.opengist.loadbalancer.server.port: "6157"
+  register: container

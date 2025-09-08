@@ -1,0 +1,12 @@
+---
+- name: Create the dozzle container
+  docker_container:
+    name: dozzle_agent
+    image: amir20/dozzle:v8.13.12
+    restart_policy: unless-stopped
+    command: agent
+    recreate: true
+    ports:
+      - 7007:7007
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

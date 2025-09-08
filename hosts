@@ -1,0 +1,18 @@
+[proxmox]
+pve2.comprofix.xyz ansible_user=root
+
+[cloud] 
+vps02.comprofix.com
+
+[docker]
+docker.comprofix.xyz
+
+[omada]
+omada-lxc.comprofix.xyz ansible_user=root
+
+[vps]
+vps01.comprofix.com
+
+[jellyfin]
+jellyfin.comprofix.xyz
+

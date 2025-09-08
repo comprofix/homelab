@@ -1,0 +1,10 @@
+---
+- hosts: frigate
+  become: yes
+  pre_tasks:
+    - name: Base Install
+      include_tasks: tasks/base.yml
+  roles:
+    - role: docker
+      tags: docker_install
+  tags: frigate_install

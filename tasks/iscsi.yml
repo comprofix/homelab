@@ -1,0 +1,88 @@
+---
+- name: Ensure open-iscsi is installed
+  package:
+    name: open-iscsi
+    state: present
+
+- name: Ensure parted is installed
+  package:
+    name: parted
+    state: present
+
+- name: Discover iSCSI targets
+  command: sudo iscsiadm -m discovery -t sendtargets -p "10.10.10.2"
+  register: iscsi_discovery
+
+- name: Set target_iqn variable based on discovery
+  set_fact:
+    target_iqn: "{{ item.split(' ')[1] }}"
+  loop: "{{ iscsi_discovery.stdout_lines }}"
+  when: item.startswith("10.10.10.2")
+
+- name: Check if iSCSI target is already connected
+  command: iscsiadm -m session
+  register: iscsi_sessions
+  changed_when: false
+  failed_when: iscsi_sessions.rc not in [0, 21]  # Allow success if the return code is 0 or 21
+
+- name: Connect to iSCSI target
+  command: sudo iscsiadm -m node -T "{{ target_iqn }}" -p "10.10.10.2" --login
+  when: target_iqn is defined and target_iqn not in iscsi_sessions.stdout
+
+- name: Set iSCSI target for automatic login
+  command: sudo iscsiadm -m node -T "{{ target_iqn }}" -p "10.10.10.2" --op update --name node.startup --value automatic
+  when: target_iqn is defined
+
+- name: Fail if no target_iqn found
+  fail:
+    msg: "No target IQN found for iSCSI server IP 10.10.10.2"
+  when: target_iqn is not defined
+
+- name: List all block devices
+  command: lsblk -o NAME,SIZE,TYPE,MODEL
+  register: lsblk_output
+
+- name: Set iSCSI device variable
+  set_fact:
+    iscsi_device: "/dev/{{ item.split()[0] }}"
+  loop: "{{ lsblk_output.stdout_lines }}"
+  when: item.split()[2] == 'disk' and 'iSCSI' in item  # Adjust based on the MODEL you observe
+
+- name: Fail if no iSCSI device found
+  fail:
+    msg: "No iSCSI device found!"
+  when: iscsi_device is not defined
+
+- name: Create a partition on iSCSI device using parted
+  parted:
+    device: "{{ iscsi_device }}"
+    number: 1
+    state: present
+    part_type: primary
+    fs_type: ext4
+    part_start: 0%   # Start at the beginning of the device
+    part_end: 100%    # Use the entire available space
+
+- name: Create filesystem on new partition
+  filesystem:
+    fstype: ext4
+    dev: "{{ iscsi_device }}1"  # Format the partition
+
+- name: Create mount point
+  file:
+    path: /data
+    state: directory
+
+- name: Mount iSCSI target
+  mount:
+    path: /data
+    src: "{{ iscsi_device }}1"  # Mount the new partition
+    fstype: ext4
+    opts: defaults,_netdev
+    state: mounted
+
+# - name: Ensure iSCSI target is mounted at boot
+#   lineinfile:
+#     path: /etc/fstab
+#     line: "{{ iscsi_device }}1 /data ext4 _netdev 0 0"
+#     state: present

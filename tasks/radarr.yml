@@ -1,0 +1,31 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/radarr"
+    - "{{ data_folder }}/radarr/config"
+  
+- name: Create the radarr container
+  docker_container:
+    name: radarr
+    image: linuxserver/radarr:5.27.5
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:radarr"
+    volumes:
+      - "{{ data_folder }}/radarr/config:/config"
+      - /mnt/nfs/data:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.radarr.rule: "Host(`radarr.comprofix.xyz`)"
+      traefik.http.routers.radarr.entrypoints: "https"
+      traefik.http.routers.radarr.tls: "true"
+      traefik.http.services.radarr.loadbalancer.server.port: "7878"

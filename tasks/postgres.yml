@@ -1,0 +1,22 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "/mnt/nfs/docker/postgres"
+    - "/mnt/nfs/docker/postgres/config"
+
+- name: Create the postgres container
+  docker_container:
+    name: postgres
+    image: postgres:16-alpine
+    restart_policy: unless-stopped
+    recreate: true
+    ports:
+      - 5432:5432
+    env:
+      POSTGRES_PASSWORD: "{{POSTGRES_PASSWORD}}"
+    volumes:
+      - /mnt/nfs/docker/postgres/db-data:/var/lib/postgresql/data
+

@@ -1,0 +1,26 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/gotify"
+    - "{{ data_folder }}/gotify/data"
+
+- name: Create the gotify container
+  docker_container:
+    name: gotify
+    image: gotify/server:2.6.3
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    volumes:
+      - /data/gotify/data:/app/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gotify.rule: "Host(`gotify.comprofix.com`)"
+      traefik.http.routers.gotify.entrypoints: "https"
+      traefik.http.routers.gotify.tls: "true"
+      traefik.http.routers.gotify.service: "gotify"
+      traefik.http.services.gotify.loadbalancer.server.port: "80"

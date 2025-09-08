@@ -1,0 +1,82 @@
+---
+ansible_user: administrator
+data_folder: "/data"
+install_packages: # Add addition packages here
+  - rsyslog
+  - htop
+  - vim-nox
+  - git
+  - zsh
+  - curl
+  - wget
+  - apt-transport-https
+  - ca-certificates
+  - gnupg2
+  - python3
+  - python3-pip
+  - nfs-common
+  - cron
+  - jq
+  - sudo
+  - logwatch
+  - sendemail
+  - libio-socket-ssl-perl
+  - libnet-ssleay-perl
+  - iptables-persistent
+  - rclone
+  - parted
+  - open-iscsi
+
+  
+
+MYSQL_ROOT_PASSWORD: MYSQLPASSWORD
+MYSQL_HOST: MYSQLHOSTNAME
+
+MAIL_HOST: SMTPHOST
+MAIL_PORT: 25
+MAIL_FROM: emailfrom@email.com
+MAIL_FROM_NAME: EMAIL NAME
+MAIL_ADMIN: emailadmin@email.com
+
+#Postgres
+POSTGRES_PASSWORD: POSTGRESADMIN
+
+# Proxmox API variables
+api_host: "{{ ansible_host }}" 
+api_user: root@pam 
+api_password: APIPASSWORD 
+api_token_id: APIID
+api_token_secret: xxxxxxx
+
+# Proxmox node target
+node_target: pve
+
+# VM storage target
+storage_target: local-zfs
+
+#Gitea
+gitea_db_root_password: "GITEA_ROOT_PASSWORD"
+gitea_db_user: "GITEA_DBUSER
+gitea_db_password: "GITEA_DBPASS"
+
+OG_GITEA_KEY: xxxxxxx
+OG_GITEA_SECRET: xxxxxxx
+
+# Invoice Ninja Variables
+IN_APP_KEY: base64:xxxxxx
+IN_APP_URL: https://invoice.ninja.com
+IN_DB_DATABASE: invoiceninja
+IN_DB_USERNAME: invoiceninja
+IN_DB_PASSWORD: invoiceninja
+
+#Speedtest-Tracker
+ST_DATABASE: speedtest_tracker
+ST_DB_USERNAME: speedtest_dbuser
+ST_DB_PASSWORD: speedtest_dbpass
+
+GITEA_RUNNER_TOKEN: gitea_runner_token
+
+VAULTWARDEN_BACKUP_ZIP_PASSWORD: vaultwarden_password
+
+TEAMS: webhook_teams_url
+

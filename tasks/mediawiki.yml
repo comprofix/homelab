@@ -1,0 +1,29 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/mediawiki"
+
+- name: Create the wiki container
+  docker_container:
+    name: mediawiki
+    image: mediawiki:1.44.0
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+    volumes:
+      - "{{ data_folder }}/mediawiki/images:/var/www/html/images"
+      - "{{ data_folder }}/mediawiki/LocalSettings.php:/var/www/html/LocalSettings.php"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.wiki.rule: "Host(`wiki.comprofix.xyz`)"
+      traefik.http.routers.wiki.entrypoints: "https"
+      traefik.http.routers.wiki.tls: "true"
+      traefik.http.services.wiki.loadbalancer.server.port: "80"

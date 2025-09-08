@@ -1,0 +1,36 @@
+---
+- name: Set Facts
+  set_fact:
+    container_name: 'lidarr'
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/lidarr"
+    - "{{ data_folder }}/lidarr/config"
+  
+- name: Create the lidarr container
+  docker_container:
+    name: lidarr
+    image: ghcr.io/linuxserver/lidarr:latest@sha256:186bc4d3f22bd6a71c235c1c7f57f90a8473f766278d9c929398fb5ce90eae7e
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+      AUTO_UPDATE: "true" #optional
+      DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:lidarr"
+    volumes:
+      - "{{ data_folder }}/lidarr/config:/config"
+      - /mnt/nfs/data:/data
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.lidarr.rule: "Host(`lidarr.comprofix.xyz`)"
+      traefik.http.routers.lidarr.entrypoints: "https"
+      traefik.http.routers.lidarr.tls: "true"
+      traefik.http.services.lidarr.loadbalancer.server.port: "8686"

@@ -1,0 +1,36 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/mealie"
+    - "{{ data_folder }}/mealie/config"
+
+- name: Create the mealie container
+  docker_container:
+    name: mealie
+    image: ghcr.io/mealie-recipes/mealie:v3.1.2
+    restart_policy: unless-stopped
+    networks:
+      - name: proxy
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+      RECIPE_PUBLIC: "true"
+      RECIPE_SHOW_NUTRITION: "false"
+      RECIPE_SHOW_ASSETS: "true"
+      RECIPE_LANDSCAPE_VIEW: "true"
+      RECIPE_DISABLE_COMMENTS: "true"
+      RECIPE_DISABLE_AMOUNT: "true"
+      BASE_URL: "mealie.comprofix.xyz"
+      SMTP_HOST: "{{MAIL_HOST}}"
+    volumes:
+      - "{{ data_folder }}/mealie/data/:/app/data"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.mealie.rule: "Host(`mealie.comprofix.xyz`)"
+      traefik.http.routers.mealie.entrypoints: "https"
+      traefik.http.routers.mealie.tls: "true"
+      traefik.http.services.mealie.loadbalancer.server.port: "9000"

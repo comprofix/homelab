@@ -1,0 +1,95 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/traefik"
+    - "{{ data_folder }}/traefik/data"
+    - "{{ data_folder }}/traefik/data/log"
+
+
+- name: Create a network
+  docker_network:
+    name: proxy
+  register: network
+
+- name: Copy Traefik config
+  template:
+    src: templates/traefik.yml.j2
+    dest: "{{ data_folder }}/traefik/data/traefik.yml"
+    mode: "0600"
+
+- name: Copy Traefik config
+  template:
+    src: templates/config.yml.j2
+    dest: "{{ data_folder }}/traefik/data/config.yml"
+    mode: "0600"
+  when: traefik_host == "traefik02.comprofix.xyz"
+
+- name: Check if {{ data_folder }}/traefik/data/acme.json exists
+  ansible.builtin.stat:
+    path: "{{ data_folder }}/traefik/data/acme.json"
+  register: file_status
+
+- name: Creates {{ data_folder }}/traefik/data/acme.json if it doesn't exists
+  ansible.builtin.file:
+    path: "{{ data_folder }}/traefik/data/acme.json"
+    state: touch
+    owner: root
+    group: root
+    mode: "0600"
+  when: not file_status.stat.exists
+
+- name: Check if traefik.json.log exists
+  ansible.builtin.stat:
+    path: "{{ data_folder }}/traefik/data/log/traefik.json.log"
+  register: file_status
+
+- name: Creates traefik.json.log if it doesn't exists
+  ansible.builtin.file:
+    path: "{{ data_folder }}/traefik/data/log/traefik.json.log"
+    state: touch
+    owner: root
+    group: root
+    mode: "0600"
+  when: not file_status.stat.exists
+
+- name: Create traefik Container
+  docker_container:
+    name: traefik
+    image: traefik:v3.5
+    restart_policy: unless-stopped
+    networks:
+      - name: "proxy"
+    ports:
+      - 80:80
+      - 443:443
+    env:
+      CF_API_EMAIL: "{{ CF_API_EMAIL }}"
+      CF_DNS_API_TOKEN: "{{CF_DNS_API_TOKEN}}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "{{ data_folder }}/traefik/data/traefik.yml:/traefik.yml:ro"
+      - "{{ data_folder }}/traefik/data/acme.json:/acme.json"
+      - "{{ data_folder }}/traefik/data/log:/var/log/traefik"
+      - "{{ data_folder }}/traefik/data/config.yml:/config.yml:ro"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.traefik.entrypoints: "http"
+      traefik.http.routers.traefik.rule: "Host(`{{traefik_host}}`)"
+      traefik.http.middlewares.traefik-auth.basicauth.users: "{{ traefik_api_user }}:{{ traefik_api_password | password_hash('blowfish','1234567890123456789012') }}"
+      traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme: "https"
+      traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto: "https"
+      traefik.http.routers.traefik.middlewares: "traefik-https-redirect"
+      traefik.http.routers.traefik-secure.entrypoints: "https"
+      traefik.http.routers.traefik-secure.rule: "Host(`{{traefik_host}}`)"
+      traefik.http.routers.traefik-secure.middlewares: "traefik-auth"
+      traefik.http.routers.traefik-secure.tls: "true"
+      traefik.http.routers.traefik-secure.tls.certresolver: "cloudflare"
+      traefik.http.routers.traefik-secure.tls.domains[0].main: "comprofix.com"
+      traefik.http.routers.traefik-secure.tls.domains[0].sans: "*.comprofix.com"
+      traefik.http.routers.traefik-secure.tls.domains[1].main: "comprofix.xyz"
+      traefik.http.routers.traefik-secure.tls.domains[1].sans: "*.comprofix.xyz"
+      traefik.http.routers.traefik-secure.service: "api@internal"

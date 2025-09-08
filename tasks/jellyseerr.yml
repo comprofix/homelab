@@ -1,0 +1,29 @@
+---    
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/jellyseerr"
+    - "{{ data_folder }}/jellyseerr/config"
+  
+- name: Create the jellyseerr container
+  docker_container:
+    name: jellyseerr
+    image: fallenbagel/jellyseerr:2.7.3 
+    restart_policy: unless-stopped
+    recreate: true
+    networks:
+      - name: proxy
+    env:
+      PUID: "1000"
+      PGID: "1000"
+      TZ: "Australia/Brisbane"
+    volumes:
+      - "{{ data_folder }}/jellyseerr/config:/app/config"
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.comprofix.xyz`)"
+      traefik.http.routers.jellyseerr.entrypoints: "https"
+      traefik.http.routers.jellyseerr.tls: "true"
+      traefik.http.services.jellyseerr.loadbalancer.server.port: "5055"

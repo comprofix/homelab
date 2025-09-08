@@ -1,0 +1,26 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/pykms"
+    - "{{ data_folder }}/pykms/db"
+  
+- name: Create the pykms container
+  docker_container:
+    name: pykms
+    image: ghcr.io/py-kms-organization/py-kms:latest
+    restart_policy: unless-stopped
+    recreate: true
+    ports:
+      - "1688:1688"
+    env:
+      IP: "0.0.0.0"
+      SQLITE: "true"
+      HWID: "RANDOM"
+      LOGLEVEL: "INFO"
+    volumes:
+      - "{{ data_folder }}/pykms/db:/home/py-kms/db"
+      - /etc/localtime:/etc/localtime:ro
+

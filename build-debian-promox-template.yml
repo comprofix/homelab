@@ -1,0 +1,78 @@
+---
+- hosts: proxmox
+  become: yes
+
+  tasks:
+
+    - name: Write notify script
+      ansible.builtin.template:
+       src: scripts/notify.sh.j2
+       dest: /tmp/notify.sh
+
+    - name: Delete existing template
+      community.general.proxmox_kvm:
+        api_host: "{{ api_host }}"
+        api_user: "{{ api_user }}"
+        api_password: "{{ api_password }}"
+        node: "{{ node_target }}"
+        name: "debian-12-generic-amd64"
+        state: absent
+
+    - name: Download cloud-init image
+      register: image
+      ansible.builtin.get_url:
+        url: "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
+        dest: /tmp
+        mode: '0644'
+        force: true
+
+    - name: Install Tools
+      ansible.builtin.apt:
+        name:
+          - libguestfs-tools
+          - python3
+          - python3-pip
+          - python3-proxmoxer
+        update_cache: true
+        install_recommends: false
+        state: present
+    
+    - name: Install Tools to cloud-init image
+      ansible.builtin.shell: |
+        virt-copy-in -a {{ image.dest }} /tmp/notify.sh /usr/local/bin
+        virt-customize -a {{ image.dest }} --run-command 'chmod +x /usr/local/bin/notify.sh'
+        virt-customize -a {{ image.dest }} --run-command 'sed -i "s|primary.*|primary: https://deb.debian.org/debian|g" /etc/cloud/cloud.cfg'
+        virt-customize -a {{ image.dest }} --run-command 'apt update'
+        virt-customize -a {{ image.dest }} --install qemu-guest-agent
+
+    - name: Create new VM template from cloud-init image
+      community.general.proxmox_kvm:
+        api_host: "{{ api_host }}"
+        api_user: "{{ api_user }}"
+        # api_password: "{{ api_password }}"
+        api_token_id: "{{ api_token_id }}"
+        api_token_secret: "{{ api_token_secret }}"
+        api_port: "8006"
+        node: "{{ node_target }}"
+        name: "debian-12-generic-amd64"
+        agent: "enabled=1"
+        bios: ovmf
+        boot: 'order=scsi0'
+        cores: 4
+        sockets: 1
+        machine: q35
+        memory: 4096
+        ostype: "l26"
+        vga: std
+        scsihw: 'virtio-scsi-single'
+        net:
+          net0: 'virtio,bridge=vmbr0,firewall=1,tag=10'
+        ipconfig:
+          ipconfig0: 'ip=dhcp'
+        template: true
+        timeout: 600
+        vmid: 10000
+       
+    - name: Import HDD to Template
+      command:
+        cmd: "qm set 10000 --scsi0 {{ storage_target }}:0,iothread=1,discard=on,import-from=/tmp/debian-12-generic-amd64.qcow2,format=raw"
