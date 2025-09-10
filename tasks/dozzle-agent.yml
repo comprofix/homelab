@@ -2,7 +2,7 @@
 - name: Create the dozzle container
   docker_container:
     name: dozzle_agent
-    image: amir20/dozzle:v8.13.13
+    image: amir20/dozzle:v8.13.14
     restart_policy: unless-stopped
     command: agent
     recreate: true
