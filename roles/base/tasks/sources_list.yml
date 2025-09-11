@@ -1,0 +1,42 @@
+---
+- name: Remove old sources.list and sources.list.d
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/sources.list
+    - /etc/apt/sources.list.d
+  become: yes
+
+- name: Ensure sources.list.d directory exists
+  file:
+    path: /etc/apt/sources.list.d
+    state: directory
+    mode: 0755
+  become: yes
+
+- name: Create Trixie sources.list.d
+  copy:
+    dest: /etc/apt/sources.list.d/debian.sources
+    content: |
+      Types: deb deb-src
+      URIs: https://deb.debian.org/debian
+      Suites: trixie trixie-updates trixie-backports
+      Components: main
+      Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+      Types: deb deb-src
+      URIs: https://deb.debian.org/debian-security
+      Suites: trixie-security
+      Components: main
+      Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Update APT cache after sources.list.d
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+  become: yes

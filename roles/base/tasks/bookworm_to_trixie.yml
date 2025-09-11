@@ -1,0 +1,26 @@
+---
+- name: Replace sources.list entries for Trixie
+  lineinfile:
+    path: /etc/apt/sources.list
+    regexp: "^deb "
+    line: "deb https://deb.debian.org/debian trixie main"
+  become: yes
+
+- name: Update cache for Trixie
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+
+- name: Dist-upgrade to Trixie
+  apt:
+    upgrade: dist
+    force_apt_get: yes
+  register: trixie_upgrade
+
+- name: Reboot after Trixie upgrade
+  reboot:
+    reboot_timeout: 600
+    test_command: whoami
+  when:
+    - ansible_virtualization_type != "lxc"
+    - trixie_upgrade.changed

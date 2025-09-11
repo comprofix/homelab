@@ -1,0 +1,17 @@
+---
+# Gather initial facts
+- name: Gather facts
+  ansible.builtin.setup:
+
+# Update system and install packages
+- import_tasks: system_update.yml
+
+# Upgrade Bookworm -> Trixie if applicable
+- import_tasks: bookworm_to_trixie.yml
+  when: ansible_distribution_release == "bookworm"
+
+# Move to Trixie sources.list.d layout
+- import_tasks: sources_list.yml
+
+# Remove EXTERNALLY-MANAGED files
+- import_tasks: python_cleanup.yml

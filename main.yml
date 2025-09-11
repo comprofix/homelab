@@ -1,17 +1,12 @@
 ---
 - hosts: all
   name: Configure all servers
-  tasks:
-    - name: Gather facts if run with tags
-      ansible.builtin.setup:
-      when: (ansible_run_tags | length) > 0
-  tags: always
-
-- hosts: jellyfin
   become: yes
-  tasks:
-    - include_tasks: tasks/base.yml
-  tags: base_install
+  gather_facts: yes
+
+  roles:
+    - role: base
+      tags: base_install
 
 - hosts: cloud
   become: yes
@@ -72,10 +67,12 @@
           path: /mnt/nfs/data
           src: truenas.comprofix.xyz:/mnt/datapool/data
       tags: nfs_install
+
     - role: traefik
       vars:
         traefik_host: traefik02.comprofix.xyz
       tags: traefik_install
+
   tasks:
     - name: Deploy comprofix.com website
       import_tasks: tasks/comprofix.com.yml
@@ -96,10 +93,6 @@
     - name: Deploy Homepage
       import_tasks: tasks/homepage.yml
       tags: homepage_install
-
-    # - name: Deploy osTicket
-    #   import_tasks: tasks/osticket.yml
-    #   tags: osticket_install
 
     - name: Deploy speedtest-tracker
       import_tasks: tasks/speedtest.yml
@@ -124,10 +117,6 @@
     - name: Deploy radarr
       import_tasks: tasks/radarr.yml
       tags: radarr_install
-
-    # - name: Deploy readarr
-    #   import_tasks: tasks/readarr.yml
-    #   tags: readarr_install
 
     - name: Deploy sonarr
       import_tasks: tasks/sonarr.yml
@@ -162,9 +151,12 @@
 - hosts: omada
   become: yes
   pre_tasks:
-    - name: Update packages
-      import_tasks: tasks/base.yml
 
+    - name: Run base role to update packages
+      import_role:
+        name: base
+      tags: base_install
+    
     - name: Create directories
       file:
         path: "{{ item }}"
@@ -176,6 +168,7 @@
       tags: docker_install
     - role: nfs
       mounts:
+  
         - name: Data share
           path: /data
           src: truenas.comprofix.xyz:/mnt/datapool/docker

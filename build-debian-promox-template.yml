@@ -3,12 +3,6 @@
   become: yes
 
   tasks:
-
-    - name: Write notify script
-      ansible.builtin.template:
-       src: scripts/notify.sh.j2
-       dest: /tmp/notify.sh
-
     - name: Delete existing template
       community.general.proxmox_kvm:
         api_host: "{{ api_host }}"
@@ -21,9 +15,9 @@
     - name: Download cloud-init image
       register: image
       ansible.builtin.get_url:
-        url: "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
+        url: "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
         dest: /tmp
-        mode: '0644'
+        mode: "0644"
         force: true
 
     - name: Install Tools
@@ -36,11 +30,9 @@
         update_cache: true
         install_recommends: false
         state: present
-    
+
     - name: Install Tools to cloud-init image
       ansible.builtin.shell: |
-        virt-copy-in -a {{ image.dest }} /tmp/notify.sh /usr/local/bin
-        virt-customize -a {{ image.dest }} --run-command 'chmod +x /usr/local/bin/notify.sh'
         virt-customize -a {{ image.dest }} --run-command 'sed -i "s|primary.*|primary: https://deb.debian.org/debian|g" /etc/cloud/cloud.cfg'
         virt-customize -a {{ image.dest }} --run-command 'apt update'
         virt-customize -a {{ image.dest }} --install qemu-guest-agent
@@ -57,22 +49,22 @@
         name: "debian-12-generic-amd64"
         agent: "enabled=1"
         bios: ovmf
-        boot: 'order=scsi0'
+        boot: "order=scsi0"
         cores: 4
         sockets: 1
         machine: q35
         memory: 4096
         ostype: "l26"
         vga: std
-        scsihw: 'virtio-scsi-single'
+        scsihw: "virtio-scsi-single"
         net:
-          net0: 'virtio,bridge=vmbr0,firewall=1,tag=10'
+          net0: "virtio,bridge=vmbr0,firewall=1,tag=10"
         ipconfig:
-          ipconfig0: 'ip=dhcp'
+          ipconfig0: "ip=dhcp"
         template: true
         timeout: 600
         vmid: 10000
-       
+
     - name: Import HDD to Template
       command:
-        cmd: "qm set 10000 --scsi0 {{ storage_target }}:0,iothread=1,discard=on,import-from=/tmp/debian-12-generic-amd64.qcow2,format=raw"
+        cmd: "qm set 10000 --scsi0 {{ storage_target }}:0,iothread=1,discard=on,import-from=/tmp/debian-13-generic-amd64.qcow2,format=raw"
