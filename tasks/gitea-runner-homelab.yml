@@ -39,4 +39,7 @@
       GITEA_INSTANCE_URL: "https://git.comprofix.com"
       GITEA_RUNNER_REGISTRATION_TOKEN: "{{ GITEA_RUNNER_TOKEN }}"
       GITEA_RUNNER_NAME: "homelab-runner"
-      GITEA_RUNNER_LABELS: "alpine-latest:docker://alpine:latest,ubuntu-latest:docker://node:22-trixie,homelab-latest:docker://git.comprofix.com/mmckinnon/debian-latest:2025.08.31-093853"
+      GITEA_RUNNER_LABELS: >
+        alpine-latest:docker://{{ alpine_latest_image }},
+        ubuntu-latest:docker://{{ ubuntu_latest_image }},
+        homelab-latest:docker://{{ debian_latest_image }}
