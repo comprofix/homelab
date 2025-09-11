@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: base
   name: Configure all servers
   become: yes
   gather_facts: yes
@@ -151,12 +151,11 @@
 - hosts: omada
   become: yes
   pre_tasks:
-
     - name: Run base role to update packages
       import_role:
         name: base
       tags: base_install
-    
+
     - name: Create directories
       file:
         path: "{{ item }}"
@@ -168,7 +167,6 @@
       tags: docker_install
     - role: nfs
       mounts:
-  
         - name: Data share
           path: /data
           src: truenas.comprofix.xyz:/mnt/datapool/docker
