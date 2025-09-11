@@ -1,0 +1,3 @@
+alpine_latest_image: "alpine:latest"
+ubuntu_latest_image: "node:22-trixie"
+debian_latest_image: "git.comprofix.com/mmckinnon/debian-latest:2025.08.31-093853"

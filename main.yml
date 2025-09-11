@@ -44,6 +44,9 @@
 
 - hosts: docker
   become: yes
+  vars_files:
+    - vars/gitea-images.yml
+
   pre_tasks:
     - name: Connect iscsi
       import_tasks: tasks/iscsi.yml
