@@ -10,7 +10,7 @@
 - name: Create the gotify container
   docker_container:
     name: gotify
-    image: gotify/server:2.7.1
+    image: gotify/server:2.7.2
     restart_policy: unless-stopped
     recreate: true
     networks:
