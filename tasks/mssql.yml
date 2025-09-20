@@ -18,6 +18,8 @@
     ports:
       - 1433:1433
     env:
+      PUID: "1000"
+      PGID: "1000"
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
       SA_PASSWORD: "{{ SA_PASSWORD }}"
