@@ -148,6 +148,10 @@
     - name: Deploy gitea-runner-homelab
       import_tasks: tasks/gitea-runner-homelab.yml
       tags: gitea-runner-homelab_install
+    
+    - name: Deploy mssql
+      import_tasks: tasks/mssql.yml
+      tags: mssql_install
 
   tags: dockerserver_install
 
