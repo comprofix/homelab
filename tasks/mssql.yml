@@ -13,13 +13,14 @@
   docker_container:
     name: mssql
     image: mcr.microsoft.com/mssql/server:2022-latest@sha256:b1395aa51b4ec39981883560f1379ea9eba2a1c0719bf8e6477902769316bb79
+    user: root
     restart_policy: unless-stopped
     recreate: true
     ports:
       - 1433:1433
     env:
-      PUID: "1000"
-      PGID: "1000"
+      PUID: "0"
+      PGID: "0"
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
       SA_PASSWORD: "{{ SA_PASSWORD }}"
