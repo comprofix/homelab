@@ -5,6 +5,9 @@
     state: directory
   with_items:
     - "{{ data_folder }}/mssql"
+    - "{{ data_folder }}/mssql/data"
+    - "{{ data_folder }}/mssql/log"
+    - "{{ data_folder }}/mssql/secrets"
 
 - name: Create the msqql container
   docker_container:
@@ -15,10 +18,10 @@
     ports:
       - 1433:1433
     env:
-      PUID: "0"
-      PGID: "0"
       ACCEPT_EULA: "Y"
       MSSQL_PID: "Express"
       SA_PASSWORD: "{{ SA_PASSWORD }}"
     volumes:
-      - "{{ data_folder }}/mssql/:/var/opt/mssql"
+      - "{{ data_folder }}/mssql/data:/var/opt/mssql/data"
+      - "{{ data_folder }}/mssql/log:/var/opt/mssql/log"
+      - "{{ data_folder }}/mssql/secrets:/var/opt/mssql/secrets"
