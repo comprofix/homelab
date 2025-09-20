@@ -1,0 +1,24 @@
+---
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ data_folder }}/mssql"
+
+- name: Create the msqql container
+  docker_container:
+    name: msqql
+    image: docker pull mcr.microsoft.com/mssql/server:2025-latest@sha256:2c80e548ef65fb65a8ca23c3a74ed60e0964ea709f46d07c97ccaf7c437e2cc6
+    restart_policy: unless-stopped
+    recreate: true
+    ports:
+      - 1433:1433
+    env:
+      PUID: "0"
+      PGID: "0"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+      SA_PASSWORD: "{{ SA_PASSWORD }}"
+    volumes:
+      - "{{ data_folder }}/mssql/:/var/opt/mssql"
