@@ -109,7 +109,7 @@
 - name: Create the opengist container
   docker_container:
     name: opengist
-    image: ghcr.io/thomiceli/opengist:1.10
+    image: ghcr.io/thomiceli/opengist:1.11
     restart_policy: unless-stopped
     recreate: true
     networks:
