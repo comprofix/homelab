@@ -94,10 +94,7 @@
       GITEA_INSTANCE_URL: "https://git.comprofix.com"
       GITEA_RUNNER_REGISTRATION_TOKEN: "{{ GITEA_RUNNER_TOKEN }}"
       GITEA_RUNNER_NAME: "gitea-runner"
-      GITEA_RUNNER_LABELS: >
-        alpine-latest:docker://{{ alpine_latest_image }},
-        ubuntu-latest:docker://{{ ubuntu_latest_image }},
-        vps-latest:docker://{{ debian_latest_image }}
+      GITEA_RUNNER_LABELS: "alpine-latest:docker://{{ alpine_latest_image }},ubuntu-latest:docker://{{ ubuntu_latest_image }},vps-latest:docker://{{ debian_latest_image }}"
 
 - name: Create directories
   file:
