@@ -1,7 +1,4 @@
 ---
-- name: Ensure facts are gathered
-  setup:
-
 - name: Ensure debian-archive-keyring is installed
   apt:
     name: debian-archive-keyring
@@ -9,124 +6,34 @@
     update_cache: yes
   become: yes
 
-- name: Update cache
+- name: Update APT cache
   apt:
-    force_apt_get: yes
     update_cache: yes
+    force_apt_get: yes
   when: ansible_distribution in ['Debian', 'Ubuntu']
 
-- name: Update all packages to their latest version
+- name: Upgrade all installed packages to latest
   apt:
     name: "*"
-    force_apt_get: yes
     state: latest
+    force_apt_get: yes
+  become: yes
   when: ansible_distribution in ['Debian', 'Ubuntu']
-  register: upgrade_result
 
-- name: Upgrade all packages on servers
+- name: Dist-upgrade packages (handle removals and replacements)
   apt:
     upgrade: dist
     force_apt_get: yes
+  become: yes
   when: ansible_distribution in ['Debian', 'Ubuntu']
-  register: dist_upgrade_result
 
 - name: Install required packages
-  package:
+  apt:
     name: "{{ install_packages }}"
     state: present
   become: yes
-  register: install_result
   when: ansible_distribution in ['Debian', 'Ubuntu']
-
-- name: Reboot if required after updates
-  reboot:
-    reboot_timeout: 600
-    test_command: whoami
-  when:
-    - upgrade_result.changed or dist_upgrade_result.changed or install_result.changed
-    - ansible_virtualization_type != "lxc"
-  become: yes
-
-- name: Gather facts after reboot
-  setup:
-
-# --- Upgrade Bookworm to Trixie ---
-- name: Upgrade Bookworm -> Trixie
-  block:
-    - name: Replace sources.list entries for Trixie
-      lineinfile:
-        path: /etc/apt/sources.list
-        regexp: "^deb "
-        line: "deb https://deb.debian.org/debian trixie main"
-      become: yes
-
-    - name: Update cache for Trixie
-      apt:
-        update_cache: yes
-        force_apt_get: yes
-
-    - name: Dist-upgrade to Trixie
-      apt:
-        upgrade: dist
-        force_apt_get: yes
-      register: trixie_upgrade
-
-    - name: Reboot to apply Trixie
-      reboot:
-        reboot_timeout: 600
-        test_command: whoami
-      when:
-        - trixie_upgrade.changed
-        - ansible_virtualization_type != "lxc"
-  when: ansible_distribution_release == "bookworm"
-
-  become: yes
-
-# --- Move to Trixie sources.list.d layout ---
-- name: Remove old sources.list.d
-  file:
-    path: /etc/apt/sources.list.d
-    state: absent
-  become: yes
-
-- name: Remove old sources.list
-  file:
-    path: /etc/apt/sources.list
-    state: absent
-  become: yes
-
-- name: Ensure sources.list.d directory exists
-  file:
-    path: /etc/apt/sources.list.d
-    state: directory
-    mode: 0755
-  become: yes
-
-- name: Create Trixie sources.list.d
-  copy:
-    dest: /etc/apt/sources.list.d/debian.sources
-    content: |
-      Types: deb deb-src
-      URIs: https://deb.debian.org/debian
-      Suites: trixie trixie-updates trixie-backports
-      Components: main
-      Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
-
-      Types: deb deb-src
-      URIs: https://deb.debian.org/debian-security
-      Suites: trixie-security
-      Components: main
-      Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
-    owner: root
-    group: root
-    mode: 0644
-  become: yes
-
-- name: Update APT cache after moving to sources.list.d layout
-  apt:
-    update_cache: yes
-    force_apt_get: yes
-  become: yes
+  register: apt_result
 
 - name: Find all EXTERNALLY-MANAGED files under /usr/lib/python*
   find:
@@ -144,81 +51,3 @@
   loop: "{{ externally_managed_files.files }}"
   when: externally_managed_files.matched > 0
   become: yes
-# - name: Download Oh My Zsh installation script
-#   get_url:
-#     url: https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
-#     dest: /tmp/install_ohmyzsh.sh
-
-# - name: Run Oh My Zsh installation script
-#   become: no
-#   command: sh /tmp/install_ohmyzsh.sh --unattended
-#   register: ohmyzsh_result
-#   failed_when: "'FAILED' in ohmyzsh_result.stderr"
-
-# - name: Download zsh Dracula Theme
-#   become: no
-#   unarchive:
-#     src: https://github.com/dracula/zsh/archive/refs/heads/master.zip
-#     dest: "/tmp"
-#     remote_src: yes
-
-# - name: Download moe theme for zsh
-#   become: no
-#   get_url:
-#     url: https://git.comprofix.com/mmckinnon/dotfiles/raw/branch/master/oh-my-zsh/moe.zsh-theme
-#     dest: "/home/{{ ansible_user }}/.oh-my-zsh/themes"
-#     force: true
-
-# - name: Move zsh theme to correct folder
-#   become: no
-#   copy:
-#     src: /tmp/zsh-master/
-#     dest: /home/{{ ansible_user }}/.oh-my-zsh/themes
-#     remote_src: yes
-
-# - name: Create vim config paths
-#   become: no
-#   file:
-#     path: "/home/{{ ansible_user }}/.vim/pack/themes/start/dracula"
-#     state: directory
-
-# - name: Download vim Dracula Theme
-#   become: no
-#   unarchive:
-#     src: https://github.com/dracula/vim/archive/refs/heads/master.zip
-#     dest: "/tmp"
-#     remote_src: yes
-
-# - name: Move vim theme to correct folder
-#   become: no
-#   copy:
-#     src: /tmp/vim-master/
-#     dest: /home/{{ ansible_user }}/.vim/pack/themes/start/dracula
-#     remote_src: yes
-
-# - name: Get zsh config
-#   become: no
-#   get_url:
-#     url: https://git.comprofix.com/mmckinnon/dotfiles/raw/branch/master/zsh/zshrc
-#     dest: "/home/{{ ansible_user }}/.zshrc"
-#     force: true
-
-# - name: Get vim config
-#   become: no
-#   get_url:
-#     url: https://git.comprofix.com/mmckinnon/dotfiles/raw/branch/master/vim/vimrc
-#     dest: "/home/{{ ansible_user }}/.vimrc"
-#     force: true
-
-# - name: Set shell zsh
-#   user:
-#     name: "{{ ansible_user }}"
-#     shell: /bin/zsh
-
-# - name: Set moe theme for zsh
-#   become: no
-#   ansible.builtin.lineinfile:
-#     path: "/home/{{ansible_user}}/.zshrc"
-#     regexp: '^ZSH_THEME="dracula"'
-#     line: 'ZSH_THEME="moe"'
-
