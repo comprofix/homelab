@@ -55,7 +55,6 @@
               bantime = 3600
               findtime = 300
       tags: base_install
-  tags: base_install
     
 
 - hosts: cloud
