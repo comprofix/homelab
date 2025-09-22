@@ -1,6 +1,6 @@
 ---
 - name: Prepare all servers
-  hosts: servers
+  hosts: all
   become: true
   vars_files:
     - group_vars/all_secrets.yml
@@ -47,6 +47,8 @@
               maxretry = 3
               bantime = 3600
               findtime = 300
+  tags: base_install
+    
 
 - hosts: cloud
   become: yes
