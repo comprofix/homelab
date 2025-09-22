@@ -1,4 +1,12 @@
 ---
+- hosts: all
+  name: Configure all servers
+  tasks:
+    - name: Gather facts (always, even with tags)
+      ansible.builtin.setup:
+      tags: always
+
+
 - name: Prepare all servers
   hosts: all
   become: true
