@@ -23,35 +23,35 @@
     - role: geerlingguy.docker
       docker_users:
         - administrator
-    - role: grzegorzfranus.fail2ban
-      vars:
-        fail2ban_ignoreip:
-          - 127.0.0.1/8 # loopback
-          - 10.0.0.0/8 # Private
-          - 172.16.0.0/12 # Private
-          - 192.168.0.0/16 # Private
-          - 169.254.0.0/16 # link-local / APIPA
-          - 100.64.0.0/10 # CGNAT
-          - 203.0.113.0/24 # TEST-NETs
-          - 192.0.2.0/24 # TEST-NETs
-          - 198.51.100.0/24 # TEST-NETs
-          - ::1 # ULA - fc00::/7 # Private
-          - fe80::/10 # Private
-        fail2ban_bantime: "1h"
-        fail2ban_findtime: "30m"
-        fail2ban_maxretry: 3
-        fail2ban_custom_jail_files:
-          - name: sshd-strict # This will create /etc/fail2ban/jail.d/sshd-strict.conf
-            content: |
-              [sshd-strict]
-              enabled = true
-              filter = sshd
-              port = ssh
-              logpath = journal
-              backend = systemd
-              maxretry = 3
-              bantime = 3600
-              findtime = 300
+    # - role: grzegorzfranus.fail2ban
+    #   vars:
+    #     fail2ban_ignoreip:
+    #       - 127.0.0.1/8 # loopback
+    #       - 10.0.0.0/8 # Private
+    #       - 172.16.0.0/12 # Private
+    #       - 192.168.0.0/16 # Private
+    #       - 169.254.0.0/16 # link-local / APIPA
+    #       - 100.64.0.0/10 # CGNAT
+    #       - 203.0.113.0/24 # TEST-NETs
+    #       - 192.0.2.0/24 # TEST-NETs
+    #       - 198.51.100.0/24 # TEST-NETs
+    #       - ::1 # ULA - fc00::/7 # Private
+    #       - fe80::/10 # Private
+    #     fail2ban_bantime: "1h"
+    #     fail2ban_findtime: "30m"
+    #     fail2ban_maxretry: 3
+    #     fail2ban_custom_jail_files:
+    #       - name: sshd-strict # This will create /etc/fail2ban/jail.d/sshd-strict.conf
+    #         content: |
+    #           [sshd-strict]
+    #           enabled = true
+    #           filter = sshd
+    #           port = ssh
+    #           logpath = journal
+    #           backend = systemd
+    #           maxretry = 3
+    #           bantime = 3600
+    #           findtime = 300
   tags: base_install
     
 
