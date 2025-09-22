@@ -18,7 +18,6 @@
 
     - name: Setup base system
       import_tasks: tasks/base.yml
-      tags: base_setup
   roles:
     - role: geerlingguy.docker
       docker_users:
