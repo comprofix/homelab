@@ -16,10 +16,11 @@ vps01.comprofix.com
 [jellyfin]
 jellyfin.comprofix.xyz
 
-[base]
-vps01.comprofix.com
-vps02.comprofix.com
-omada-lxc.comprofix.xyz
-jellyfin.comprofix.xyz
-
+[servers:children]
+base
+jellyfin
+vps
+omada
+docker
+cloud
 

@@ -26,5 +26,4 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
           echo "nameserver 10.10.10.1" > /etc/resolv.conf
-          ansible-galaxy install oefenweb.fail2ban
           ./.gitea/workflows/deploy.sh "${{ github.event.before }}" "${{ github.sha }}"
