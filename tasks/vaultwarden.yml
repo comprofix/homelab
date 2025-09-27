@@ -43,7 +43,7 @@
 - name: Create the vaultwarden container
   docker_container:
     name: vaultwardenbackup
-    image: ttionya/vaultwarden-backup:1.25.1
+    image: ttionya/vaultwarden-backup:1.25.2
     restart_policy: unless-stopped
     recreate: true
     env:
