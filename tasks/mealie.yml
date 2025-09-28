@@ -10,7 +10,7 @@
 - name: Create the mealie container
   docker_container:
     name: mealie
-    image: ghcr.io/mealie-recipes/mealie:v3.2.1
+    image: ghcr.io/mealie-recipes/mealie:v3.3.0
     restart_policy: unless-stopped
     networks:
       - name: proxy
