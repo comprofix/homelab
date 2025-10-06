@@ -9,7 +9,7 @@
 - name: Create the wiki container
   docker_container:
     name: mediawiki
-    image: mediawiki:1.44.0
+    image: mediawiki:1.44.2
     restart_policy: unless-stopped
     recreate: true
     networks:
