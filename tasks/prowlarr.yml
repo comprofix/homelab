@@ -6,13 +6,20 @@
   with_items:
     - "/data/prowlarr"
     - "/data/prowlarr/config"
-  
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: linuxserver/prowlarr
+    tag: 2.0.5
+    source: pull
+  register: docker_image
+
+
 - name: Create the prowlarr container
   docker_container:
     name: prowlarr
-    image: linuxserver/prowlarr:2.0.5
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:
@@ -29,3 +36,5 @@
       traefik.http.routers.prowlarr.entrypoints: "https"
       traefik.http.routers.prowlarr.tls: "true"
       traefik.http.services.prowlarr.loadbalancer.server.port: "9696"
+  when: docker_image.changed
+  register: container_prowlarr
