@@ -6,11 +6,18 @@
   with_items:
     - "/data/radarr"
     - "/data/radarr/config"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: linuxserver/radarr
+    tag: 5.27.5
+    source: pull
+  register: docker_image
   
 - name: Create the radarr container
   docker_container:
     name: radarr
-    image: linuxserver/radarr:5.27.5
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
     recreate: true
     networks:
@@ -29,3 +36,5 @@
       traefik.http.routers.radarr.entrypoints: "https"
       traefik.http.routers.radarr.tls: "true"
       traefik.http.services.radarr.loadbalancer.server.port: "7878"
+  when: docker_image.changed
+  register: container_radarr
