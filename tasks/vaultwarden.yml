@@ -15,7 +15,6 @@
     name: vaultwarden
     image: vaultwarden/server:1.34.3
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:
@@ -45,7 +44,7 @@
     name: vaultwardenbackup
     image: ttionya/vaultwarden-backup:1.25.2
     restart_policy: unless-stopped
-    recreate: true
+    
     env:
       PUID: "1000"
       PGID: "1000"

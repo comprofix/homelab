@@ -3,7 +3,6 @@
     name: comprofix.com
     image: git.comprofix.com/mmckinnon/comprofix.com:latest
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     labels:

@@ -21,7 +21,6 @@
     image: "{{ docker_image.image.RepoTags[0] }}"
     user: root
     restart_policy: unless-stopped
-    recreate: true
     ports:
       - 1433:1433
     env:

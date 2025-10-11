@@ -5,7 +5,6 @@
     image: amir20/dozzle:v8.14.4
     restart_policy: unless-stopped
     command: agent
-    recreate: true
     ports:
       - 7007:7007
     volumes:

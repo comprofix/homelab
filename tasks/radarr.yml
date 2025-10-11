@@ -19,7 +19,6 @@
     name: radarr
     image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:

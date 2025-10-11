@@ -19,7 +19,6 @@
     name: postgres
     image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     ports:
       - 5432:5432
     env:

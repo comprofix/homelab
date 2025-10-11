@@ -13,7 +13,6 @@
     name: speedtest
     image: lscr.io/linuxserver/speedtest-tracker:1.6.8
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:

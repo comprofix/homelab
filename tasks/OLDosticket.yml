@@ -12,7 +12,6 @@
     name: osticket
     image: devinsolutions/osticket:1.17.5
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:

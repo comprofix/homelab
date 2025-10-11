@@ -18,7 +18,6 @@
     name: pykms
     image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     ports:
       - "1688:1688"
     env:
