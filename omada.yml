@@ -1,19 +1,8 @@
 ---
-- hosts: omada
-  become: yes
-  roles:
-    - role: nfs
-      mounts:
-        - name: Data share
-          path: /data
-          src: truenas.comprofix.xyz:/mnt/datapool/docker
-      tags: nfs_install
+- name: Setup the omada
+  hosts: omada
+  become: true
   tasks:
-    - name: Deploy Dozzle Agent
-      import_tasks: tasks/dozzle-agent.yml
-      tags: dozzle-agent_install
-
-    - name: Deploy Omada
+    - name: Deploy omada controller
       import_tasks: tasks/omada.yml
-      tags: omada_install
-  tags: omada_lxc_install
+   

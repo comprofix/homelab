@@ -4,21 +4,29 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/omada"
-    - "{{ data_folder }}/omada/data"
-    - "{{ data_folder }}/omada/logs"
+    - "/data/omada"
+    - "/data/omada/data"
+    - "/data/omada/logs"
 
-- name: Create the omada container
+- name: Pull omada image
+  community.docker.docker_image:
+    name: mbentley/omada-controller
+    tag: "5.15"
+    source: pull
+  register: docker_image
+
+- name: Create/Update the omada-controller container
   docker_container:
     name: omada
-    image: mbentley/omada-controller:5.15
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     network_mode: host
     volumes:
-      - "{{ data_folder }}/omada/data:/opt/tplink/EAPController/data"
-      - "{{ data_folder }}/omada/logs:/opt/tplink/EAPController/logs"
+      - "/data/omada/data:/opt/tplink/EAPController/data"
+      - "/data/omada/logs:/opt/tplink/EAPController/logs"
     env:
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
+  when: docker_image.changed
+  register: container_omada
