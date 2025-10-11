@@ -13,7 +13,6 @@ fi
 #files=`find . \( -type d -name 'group_vars' -o -name 'vars' \) -exec find {} -type f \;`
 files=(
   "./group_vars/all.yml"
-  "./roles/docker/vars/main.yml"
   "./roles/traefik/vars/main.yml"
   "./scripts/rclone.conf"
 )

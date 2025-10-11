@@ -3,100 +3,100 @@
   become: yes
   vars_files:
     - vars/gitea-images.yml
+  vars:
+    traefik_host: "traefik.comprofix.xyz"
 
   pre_tasks:
     - name: Connect iscsi
       import_tasks: tasks/iscsi.yml
       tags: iscsi_connect
 
-  roles:
-    - role: nfs
-      mounts:
-        - name: Data share
-          path: /mnt/nfs/data
-          src: truenas.comprofix.xyz:/mnt/datapool/data
-      tags: nfs_install
-
-    - role: traefik
+    - name: Connect NFS
+      import_tasks: tasks/nfs.yml
       vars:
-        traefik_host: traefik02.comprofix.xyz
-      tags: traefik_install
+        mounts:
+          - name: Data share
+            path: /mnt/nfs/data
+            src: truenas.comprofix.xyz:/mnt/datapool/docker
 
   tasks:
     - name: Deploy comprofix.com website
-      import_tasks: tasks/comprofix.com.yml
-      tags: comprofix_install
+      import_tasks: tasks/traefik.yml
+      
+  #   - name: Deploy comprofix.com website
+  #     import_tasks: tasks/comprofix.com.yml
+  #     tags: comprofix_install
 
-    - name: Deploy iDrac Fan Controller
-      import_tasks: tasks/idrac.yml
-      tags: idrac_install
+  #   - name: Deploy iDrac Fan Controller
+  #     import_tasks: tasks/idrac.yml
+  #     tags: idrac_install
 
-    - name: Deploy MariaDB
-      import_tasks: tasks/mariadb.yml
-      tags: mariadb_install
+  #   - name: Deploy MariaDB
+  #     import_tasks: tasks/mariadb.yml
+  #     tags: mariadb_install
 
-    - name: Deploy InvoiceNinja
-      import_tasks: tasks/invoiceninja.yml
-      tags: invoiceninja_install
+  #   - name: Deploy InvoiceNinja
+  #     import_tasks: tasks/invoiceninja.yml
+  #     tags: invoiceninja_install
 
-    - name: Deploy Homepage
-      import_tasks: tasks/homepage.yml
-      tags: homepage_install
+  #   - name: Deploy Homepage
+  #     import_tasks: tasks/homepage.yml
+  #     tags: homepage_install
 
-    - name: Deploy speedtest-tracker
-      import_tasks: tasks/speedtest.yml
-      tags: speedtest_install
+  #   - name: Deploy speedtest-tracker
+  #     import_tasks: tasks/speedtest.yml
+  #     tags: speedtest_install
 
-    - name: Deploy dozzle
-      import_tasks: tasks/dozzle.yml
-      tags: dozzle_install
+  #   - name: Deploy dozzle
+  #     import_tasks: tasks/dozzle.yml
+  #     tags: dozzle_install
 
-    - name: Deploy jellyseerr
-      import_tasks: tasks/jellyseerr.yml
-      tags: jellyseerr_install
+  #   - name: Deploy jellyseerr
+  #     import_tasks: tasks/jellyseerr.yml
+  #     tags: jellyseerr_install
 
-    - name: Deploy lidarr
-      import_tasks: tasks/lidarr.yml
-      tags: lidarr_install
+  #   - name: Deploy lidarr
+  #     import_tasks: tasks/lidarr.yml
+  #     tags: lidarr_install
 
-    - name: Deploy prowlarr
-      import_tasks: tasks/prowlarr.yml
-      tags: prowlarr_install
+  #   - name: Deploy prowlarr
+  #     import_tasks: tasks/prowlarr.yml
+  #     tags: prowlarr_install
 
-    - name: Deploy radarr
-      import_tasks: tasks/radarr.yml
-      tags: radarr_install
+  #   - name: Deploy radarr
+  #     import_tasks: tasks/radarr.yml
+  #     tags: radarr_install
 
-    - name: Deploy sonarr
-      import_tasks: tasks/sonarr.yml
-      tags: sonarr_install
+  #   - name: Deploy sonarr
+  #     import_tasks: tasks/sonarr.yml
+  #     tags: sonarr_install
 
-    - name: Deploy sabnzbd
-      import_tasks: tasks/sabnzbd.yml
-      tags: sabnzbd_install
+  #   - name: Deploy sabnzbd
+  #     import_tasks: tasks/sabnzbd.yml
+  #     tags: sabnzbd_install
 
-    - name: Deploy mealie
-      import_tasks: tasks/mealie.yml
-      tags: mealie_install
+  #   - name: Deploy mealie
+  #     import_tasks: tasks/mealie.yml
+  #     tags: mealie_install
 
-    - name: Deploy pyKMS
-      import_tasks: tasks/pykms.yml
-      tags: pykms_install
+  #   - name: Deploy pyKMS
+  #     import_tasks: tasks/pykms.yml
+  #     tags: pykms_install
 
-    - name: Deploy mediawiki
-      import_tasks: tasks/mediawiki.yml
-      tags: mediawiki_install
+  #   - name: Deploy mediawiki
+  #     import_tasks: tasks/mediawiki.yml
+  #     tags: mediawiki_install
 
-    - name: Deploy traggo
-      import_tasks: tasks/traggo.yml
-      tags: traggo_install
+  #   - name: Deploy traggo
+  #     import_tasks: tasks/traggo.yml
+  #     tags: traggo_install
 
-    - name: Deploy gitea-runner-homelab
-      import_tasks: tasks/gitea-runner-homelab.yml
-      tags: gitea-runner-homelab_install
+  #   - name: Deploy gitea-runner-homelab
+  #     import_tasks: tasks/gitea-runner-homelab.yml
+  #     tags: gitea-runner-homelab_install
     
-    # - name: Deploy mssql
-    #   import_tasks: tasks/mssql.yml
-    #   tags: mssql_install
+  #   # - name: Deploy mssql
+  #   #   import_tasks: tasks/mssql.yml
+  #   #   tags: mssql_install
 
-  tags: dockerserver_install
+  # tags: dockerserver_install

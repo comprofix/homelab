@@ -1,5 +1,0 @@
----
-CF_API_EMAIL: CF_EMAIL
-CF_DNS_API_TOKEN: "CF_API_TOKEN"
-traefik_api_user: "admin"
-traefik_api_password: "password"

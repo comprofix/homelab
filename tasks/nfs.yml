@@ -1,5 +1,4 @@
 ---
-  
 - name: Install NFS mount utility
   ansible.builtin.apt:
     update_cache: true
@@ -11,10 +10,7 @@
   ansible.posix.mount:
     src: "{{ item.src }}"
     path: "{{ item.path }}"
-    opts: "{{ item.opts | default(nfs_mount_opts) }}"
+    opts: "{{ item.opts | default('rw,sync,hard') }}"
     state: "{{ item.state | default( 'mounted' ) }}"
     fstype: nfs
   with_items: "{{ mounts }}"
-    
-
-
