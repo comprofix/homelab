@@ -15,7 +15,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: ghcr.io/gethomepage/homepage
+    name: ghcr.io/gethomepage/homepage
     tag: v1.5.0
     source: pull
   register: docker_image

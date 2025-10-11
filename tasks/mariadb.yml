@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: ghcr.io/linuxserver/mariadb
+    name: ghcr.io/linuxserver/mariadb
     tag: 11.4.8
     source: pull
   register: docker_image

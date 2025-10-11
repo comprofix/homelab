@@ -8,7 +8,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: mediawiki
+    name: mediawiki
     tag: 1.44.2
     source: pull
   register: docker_image

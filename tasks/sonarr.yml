@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: linuxserver/sonarr
+    name: linuxserver/sonarr
     tag: 4.0.15
     source: pull
   register: docker_image

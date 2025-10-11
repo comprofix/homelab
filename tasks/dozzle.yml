@@ -1,7 +1,7 @@
 ---
 - name: Pull docker image
   community.docker.docker_image:
-    image: amir20/dozzle
+    name: amir20/dozzle
     tag: v8.14.4
     source: pull
   register: docker_image

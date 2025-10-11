@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: fallenbagel/jellyseerr:2.7.3 
+    name: fallenbagel/jellyseerr:2.7.3 
     tag: 2.7.3
     source: pull
   register: docker_image

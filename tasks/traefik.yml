@@ -34,7 +34,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: traefik
+    name: traefik
     tag: v3.5
     source: pull
   register: docker_image

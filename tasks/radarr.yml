@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: linuxserver/radarr
+    name: linuxserver/radarr
     tag: 5.27.5
     source: pull
   register: docker_image

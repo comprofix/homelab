@@ -5,10 +5,10 @@
     traefik_host: "vps02.comprofix.com"
 
   tasks:
-    - name: Deploy traefik website
+    - name: Deploy traefik
       import_tasks: tasks/traefik.yml
 
-    - name: Deploy postgres website
+    - name: Deploy postgres
       import_tasks: tasks/postgres.yml
 
     - name: Deploy Vaultwarden

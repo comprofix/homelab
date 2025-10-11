@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: postgres
+    name: postgres
     tag: 17.0-alpine
     source: pull
   register: docker_image

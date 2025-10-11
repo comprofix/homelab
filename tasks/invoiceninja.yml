@@ -58,7 +58,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: invoiceninja/invoiceninja
+    name: invoiceninja/invoiceninja
     tag: 5
     source: pull
   register: docker_image
@@ -80,7 +80,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: nginx
+    name: nginx
     tag: 1.29.2
     source: pull
   register: docker_image

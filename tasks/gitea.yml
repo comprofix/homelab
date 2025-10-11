@@ -10,7 +10,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: mysql
+    name: mysql
     tag: 9
     source: pull
   register: docker_image
@@ -34,7 +34,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: gitea/gitea
+    name: gitea/gitea
     tag: 1.24
     source: pull
   register: docker_image
@@ -90,7 +90,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: gitea/act_runner
+    name: gitea/act_runner
     tag: 0.2.13
     source: pull
   register: docker_image
@@ -123,7 +123,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: ghcr.io/thomiceli/opengist
+    name: ghcr.io/thomiceli/opengist
     tag: 1.11
     source: pull
   register: docker_image

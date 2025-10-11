@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image:  ghcr.io/mealie-recipes/mealie
+    name:  ghcr.io/mealie-recipes/mealie
     tag: v3.3.2
     source: pull
   register: docker_image

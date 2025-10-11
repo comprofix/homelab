@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: linuxserver/sabnzbd
+    name: linuxserver/sabnzbd
     tag: 4.5.3
     source: pull
   register: docker_image

@@ -9,8 +9,11 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    image: ghcr.io/linuxserver/lidarr@sha256:5661b79d7245ec0c196a5a35ac13be44c6d76563d9e5bf855b3ffa3b91160999
+    name: ghcr.io/linuxserver/lidarr
+    tag: latest
     source: pull
+    force_source: true
+    force_tag: true
   register: docker_image
   
 - name: Create the lidarr container
