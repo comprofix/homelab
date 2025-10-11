@@ -6,11 +6,17 @@
   with_items:
     - "/data/pykms"
     - "/data/pykms/db"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: ghcr.io/py-kms-organization/py-kms@sha256:07e5295d563df9e8f5165109d79cf06e425559c8b7f465c3c22578f62f8dce59
+    source: pull
+  register: docker_image
   
 - name: Create the pykms container
   docker_container:
     name: pykms
-    image: ghcr.io/py-kms-organization/py-kms:latest
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
     recreate: true
     ports:
@@ -23,4 +29,6 @@
     volumes:
       - "/data/pykms/db:/home/py-kms/db"
       - /etc/localtime:/etc/localtime:ro
+  when: docker_image.changed
+  register: container_pykms
 
