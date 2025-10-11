@@ -6,13 +6,19 @@
   with_items:
     - "/data/sonarr"
     - "/data/sonarr/config"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: linuxserver/sonarr
+    tag: 4.0.15
+    source: pull
+  register: docker_image
   
 - name: Create the sonarr container
   docker_container:
     name: sonarr
-    image: linuxserver/sonarr:4.0.15
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:
@@ -29,3 +35,5 @@
       traefik.http.routers.sonarr.entrypoints: "https"
       traefik.http.routers.sonarr.tls: "true"
       traefik.http.services.sonarr.loadbalancer.server.port: "8989"
+  when: docker_image.changed
+  register: container_sonarr
