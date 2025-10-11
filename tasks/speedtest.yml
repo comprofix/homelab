@@ -4,9 +4,9 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/speedtest"
-    - "{{ data_folder }}/speedtest/config"
-    - "{{ data_folder }}/speedtest/web"
+    - "/data/speedtest"
+    - "/data/speedtest/config"
+    - "/data/speedtest/web"
 
 - name: Create the speedtest container
   docker_container:
@@ -30,8 +30,8 @@
       SPEEDTEST_SCHEDULE: "0 * * * *"
       DISPLAY_TIMEZONE: "Australia/Brisbane"
     volumes:
-      - "{{ data_folder }}/speedtest/config:/config"
-      - "{{ data_folder }}/speedtest/web:/etc/ssl/web"
+      - "/data/speedtest/config:/config"
+      - "/data/speedtest/web:/etc/ssl/web"
     labels:
       traefik.enable: "true"
       traefik.http.routers.speedtest.rule: "Host(`speedtest.comprofix.xyz`)"

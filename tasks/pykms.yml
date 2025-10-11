@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/pykms"
-    - "{{ data_folder }}/pykms/db"
+    - "/data/pykms"
+    - "/data/pykms/db"
   
 - name: Create the pykms container
   docker_container:
@@ -21,6 +21,6 @@
       HWID: "RANDOM"
       LOGLEVEL: "INFO"
     volumes:
-      - "{{ data_folder }}/pykms/db:/home/py-kms/db"
+      - "/data/pykms/db:/home/py-kms/db"
       - /etc/localtime:/etc/localtime:ro
 

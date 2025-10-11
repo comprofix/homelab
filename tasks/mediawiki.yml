@@ -4,7 +4,7 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/mediawiki"
+    - "/data/mediawiki"
 
 - name: Create the wiki container
   docker_container:
@@ -19,8 +19,8 @@
       PGID: "1000"
       TZ: "Australia/Brisbane"
     volumes:
-      - "{{ data_folder }}/mediawiki/images:/var/www/html/images"
-      - "{{ data_folder }}/mediawiki/LocalSettings.php:/var/www/html/LocalSettings.php"
+      - "/data/mediawiki/images:/var/www/html/images"
+      - "/data/mediawiki/LocalSettings.php:/var/www/html/LocalSettings.php"
     labels:
       traefik.enable: "true"
       traefik.http.routers.wiki.rule: "Host(`wiki.comprofix.xyz`)"

@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/osticket"
-    - "{{ data_folder }}/osticket/config"
+    - "/data/osticket"
+    - "/data/osticket/config"
 
 - name: Create the osticket container
   docker_container:

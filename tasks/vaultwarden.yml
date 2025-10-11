@@ -4,11 +4,11 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/vaultwarden"
-    - "{{ data_folder }}/vaultwarden/config"
-    - "{{ data_folder }}/vaultwardenbackup"
-    - "{{ data_folder }}/vaultwardenbackup/config"
-    - "{{ data_folder }}/vaultwardenbackup/config/rclone"
+    - "/data/vaultwarden"
+    - "/data/vaultwarden/config"
+    - "/data/vaultwardenbackup"
+    - "/data/vaultwardenbackup/config"
+    - "/data/vaultwardenbackup/config/rclone"
   
 - name: Create the vaultwarden container
   docker_container:
@@ -23,7 +23,7 @@
       PGID: "1000"
       TZ: "Australia/Brisbane"
     volumes:
-      - "{{ data_folder }}/vaultwarden/data:/data"
+      - "/data/vaultwarden/data:/data"
     labels:
       traefik.enable: "true"
       traefik.http.routers.vaultwarden.rule: "Host(`vault.comprofix.com`)"
@@ -36,7 +36,7 @@
 - name: Copy rclone config
   copy:
     src: scripts/rclone.conf
-    dest: "{{ data_folder }}/vaultwardenbackup/config/rclone/rclone.conf"
+    dest: "/data/vaultwardenbackup/config/rclone/rclone.conf"
     decrypt: yes
     mode: "0600"
 
@@ -54,8 +54,8 @@
       BACKUP_KEEP_DAYS: "14"
       ZIP_PASSWORD: "{{ VAULTWARDEN_BACKUP_ZIP_PASSWORD }}"
     volumes:
-      - "{{ data_folder }}/vaultwarden/data:/bitwarden/data"
-      - "{{ data_folder }}/vaultwardenbackup/config:/config"
+      - "/data/vaultwarden/data:/bitwarden/data"
+      - "/data/vaultwardenbackup/config:/config"
   register: container
 
 

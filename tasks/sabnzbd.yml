@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/sabnzbd"
-    - "{{ data_folder }}/sabnzbd/config"
+    - "/data/sabnzbd"
+    - "/data/sabnzbd/config"
   
 - name: Create the sabnzbd container
   docker_container:
@@ -22,7 +22,7 @@
       HOSTNAME: "sabnzbd.comprofix.xyz"
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:sabnzbd"
     volumes:
-      - "{{ data_folder }}/sabnzbd/config:/config"
+      - "/data/sabnzbd/config:/config"
       - /mnt/nfs/data:/data
     labels:
       traefik.enable: "true"

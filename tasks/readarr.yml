@@ -6,8 +6,8 @@
 #     path: "{{ item }}"
 #     state: directory
 #   with_items:
-#     - "{{ data_folder }}/readarr"
-#     - "{{ data_folder }}/readarr/config"
+#     - "/data/readarr"
+#     - "/data/readarr/config"
 
 # - name: Create the readarr container
 #   docker_container:
@@ -23,7 +23,7 @@
 #       TZ: "Australia/Brisbane"
 #       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:readarr"
 #     volumes:
-#       - "{{ data_folder }}/readarr/config/:/config"
+#       - "/data/readarr/config/:/config"
 #       - /mnt/nfs/data/:/data
 #     labels:
 #       traefik.enable: "true"

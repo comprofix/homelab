@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/traggo"
-    - "{{ data_folder }}/traggo/data"
+    - "/data/traggo"
+    - "/data/traggo/data"
 
 - name: Create the traggo container
   docker_container:

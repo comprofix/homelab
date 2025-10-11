@@ -4,10 +4,10 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/mssql"
-    - "{{ data_folder }}/mssql/data"
-    - "{{ data_folder }}/mssql/log"
-    - "{{ data_folder }}/mssql/secrets"
+    - "/data/mssql"
+    - "/data/mssql/data"
+    - "/data/mssql/log"
+    - "/data/mssql/secrets"
 
 - name: Create the mssql container
   docker_container:
@@ -25,6 +25,6 @@
       MSSQL_PID: "Express"
       SA_PASSWORD: "{{ SA_PASSWORD }}"
     volumes:
-      - "{{ data_folder }}/mssql/data:/var/opt/mssql/data"
-      - "{{ data_folder }}/mssql/log:/var/opt/mssql/log"
-      - "{{ data_folder }}/mssql/secrets:/var/opt/mssql/secrets"
+      - "/data/mssql/data:/var/opt/mssql/data"
+      - "/data/mssql/log:/var/opt/mssql/log"
+      - "/data/mssql/secrets:/var/opt/mssql/secrets"

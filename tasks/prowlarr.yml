@@ -4,8 +4,8 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/prowlarr"
-    - "{{ data_folder }}/prowlarr/config"
+    - "/data/prowlarr"
+    - "/data/prowlarr/config"
   
 - name: Create the prowlarr container
   docker_container:
@@ -22,7 +22,7 @@
       AUTO_UPDATE: "true" #optional
       DOCKER_MODS: "ghcr.io/themepark-dev/theme.park:prowlarr"
     volumes:
-      - "{{ data_folder }}/prowlarr/config:/config"
+      - "/data/prowlarr/config:/config"
     labels:
       traefik.enable: "true"
       traefik.http.routers.prowlarr.rule: "Host(`prowlarr.comprofix.xyz`)"
