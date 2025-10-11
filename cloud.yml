@@ -1,0 +1,22 @@
+---
+- hosts: cloud
+  become: yes
+  roles:
+    - name: traefik
+      vars:
+        traefik_host: traefik01.comprofix.com
+      tags: traefik_install
+
+  tasks:
+    - name: Deploy Vaultwarden
+      import_tasks: tasks/vaultwarden.yml
+      tags: vaultwarden_install
+
+    - name: Deploy gitea
+      import_tasks: tasks/gitea.yml
+      tags: gitea_install
+
+    - name: Gotify
+      import_tasks: tasks/gotify.yml
+      tags: gotify_install
+  tags: cloud_install

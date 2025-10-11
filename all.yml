@@ -1,12 +1,24 @@
 ---
-- name: Prepare all servers
-  hosts: all
-  become: true
+- hosts: all
+  become: yes
+  name: Configure all servers
   pre_tasks:
     - name: Create directories
       file:
         path: "/data"
         state: directory
+  roles:
+    - role: geerlingguy.docker
+      docker_users:
+        - administrator
+  tasks:
+    - name: Gather facts (always, even with tags)
+      ansible.builtin.setup:
+      tags: always
 
     - name: Setup base system
       import_tasks: tasks/base.yml
+
+  
+
+    
