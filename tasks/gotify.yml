@@ -9,7 +9,7 @@
 
 - name: Pull docker image
   community.docker.docker_image:
-    name: mgotify/server
+    image: mgotify/server
     tag: 2.7.3
     source: pull
   register: docker_image
