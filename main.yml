@@ -1,7 +1,7 @@
 ---
 #- import_playbook: all.yml
 #- import_playbook: internetfacing.yml
-#- import_playbook: cloud.yml
-- import_playbook: docker.yml
+- import_playbook: cloud.yml
+#- import_playbook: docker.yml
 #- import_playbook: omada.yml
 

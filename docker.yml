@@ -20,7 +20,7 @@
             src: truenas.comprofix.xyz:/mnt/datapool/docker
 
   tasks:
-    - name: Deploy comprofix.com website
+    - name: Deploy traefik website
       import_tasks: tasks/traefik.yml
       
   #   - name: Deploy comprofix.com website

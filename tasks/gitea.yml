@@ -4,14 +4,21 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/gitea"
-    - "{{ data_folder }}/gitea/data"
-    - "{{ data_folder }}/gitea/db"
+    - "/data/gitea"
+    - "/data/gitea/data"
+    - "/data/gitea/db"
+
+- name: Pull dozzle image
+  community.docker.docker_image:
+    name: mysql
+    tag: 9
+    source: pull
+  register: docker_image
 
 - name: Create MySQL DB for Gitea
   docker_container:
     name: gitea_db
-    image: mysql:9
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -21,17 +28,22 @@
       MYSQL_PASSWORD: "{{ gitea_db_password }}"
       MYSQL_DATABASE: gitea
     volumes:
-      - "{{ data_folder }}/gitea/db:/var/lib/mysql"
+      - "/data/gitea/db:/var/lib/mysql"
+  when: docker_image.changed
+  register: container_mysql
+
+- name: Pull dozzle image
+  community.docker.docker_image:
+    name: gitea/gitea
+    tag: 1.24
+    source: pull
+  register: docker_image
 
 - name: Create the Gitea container
   docker_container:
     name: gitea
-    image: gitea/gitea:1.24
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
-    # dns_servers:
-    #   - 10.10.10.1
-    #   - 127.0.0.11
     networks:
       - name: proxy
     ports:
@@ -41,7 +53,7 @@
       PGID: "1001"
       TZ: "Australia/Brisbane"
     volumes:
-      - "{{ data_folder }}/gitea/data:/data"
+      - "/data/gitea/data:/data"
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     labels:
@@ -51,71 +63,80 @@
       traefik.http.routers.gitea.tls: "true"
       traefik.http.routers.gitea.service: "gitea"
       traefik.http.services.gitea.loadbalancer.server.port: "3000"
+  when: docker_image.changed
   register: container_gitea
 
-- name: Create directories
+- name: Create folders
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/gitea-runner"
-    - "{{ data_folder }}/gitea-runner/config"
+    - "/data/gitea-runner"
+    - "/data/gitea-runner/config"
 
 - name: Check that config.yaml exists
   stat:
-    path: "{{ data_folder }}/gitea-runner/config/config.yaml"
+    path: "/data/gitea-runner/config/config.yaml"
   register: configyaml
 
 - name: Create config.yaml file
   file:
-    path: "{{ data_folder }}/gitea-runner/config/config.yaml"
+    path: "/data/gitea-runner/config/config.yaml"
     state: touch
     mode: "0600"
     access_time: preserve
     modification_time: preserve
   when: configyaml.stat.exists == False
 
+- name: Pull act-runner image
+  community.docker.docker_image:
+    name: gitea/act_runner
+    tag: 0.2.13
+    source: pull
+  register: docker_image
+
 - name: Create the gitea-runner container
   docker_container:
     name: gitea-runner
-    image: gitea/act_runner:0.2.13
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
-    # dns_servers:
-    #   - 10.10.10.1
-    #   - 127.0.0.11
     volumes:
       - "/etc/resolv.conf:/etc/resolv.conf:ro"
       - /var/run/docker.sock:/var/run/docker.sock
-      - "{{ data_folder }}/gitea-runner/config/config.yaml:/config.yaml"
+      - "/data/gitea-runner/config/config.yaml:/config.yaml"
       - "/etc/hosts:/etc/hosts:ro"
     env:
       CONFIG_FILE: "/config.yaml"
       GITEA_INSTANCE_URL: "https://git.comprofix.com"
       GITEA_RUNNER_REGISTRATION_TOKEN: "{{ GITEA_RUNNER_TOKEN }}"
-      GITEA_RUNNER_NAME: "gitea-runner"
-      GITEA_RUNNER_LABELS: "alpine-latest:docker://{{ alpine_latest_image }},ubuntu-latest:docker://{{ ubuntu_latest_image }},vps-latest:docker://{{ debian_latest_image }}"
+      GITEA_RUNNER_NAME: "gtar-runner"
+      GITEA_RUNNER_LABELS: "alpine-latest:docker://git.comprofix.com/mmckinnon/alpine-runner:latest,ubuntu-latest:docker://node:22-trixie,gtar-latest:docker://git.comprofix.com/mmckinnon/debian-latest:latest"
+  when: docker_image.changed
+  register: container_gitea_runner
 
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/opengist"
+    - "/data/opengist"
+
+- name: Pull dozzle image
+  community.docker.docker_image:
+    name: ghcr.io/thomiceli/opengist
+    tag: 1.11
+    source: pull
+  register: docker_image
 
 - name: Create the opengist container
   docker_container:
     name: opengist
-    image: ghcr.io/thomiceli/opengist:1.11
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
-    # dns_servers:
-    #   - 10.10.10.1
-    #   - 127.0.0.11
     volumes:
-      - "{{ data_folder }}/opengist:/opengist"
+      - "/data/opengist:/opengist"
     env:
       OG_GITEA_CLIENT_KEY: "{{ OG_GITEA_KEY }}"
       OG_GITEA_SECRET: "{{ OG_GITEA_SECRET }}"
@@ -131,4 +152,5 @@
       traefik.http.routers.opengist.tls: "true"
       traefik.http.routers.opengist.service: "opengist"
       traefik.http.services.opengist.loadbalancer.server.port: "6157"
-  register: container
+  when: docker_image.changed
+  register: container_opengist

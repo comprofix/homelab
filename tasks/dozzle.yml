@@ -1,29 +1,29 @@
 ---
-- name: Create directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "{{ data_folder }}/dozzle"
-    - "{{ data_folder }}/dozzle/config"
-
-- name: Create the dozzle container
+- name: Pull dozzle image
+  community.docker.docker_image:
+    name: amir20/dozzle
+    tag: v8.14.4
+    source: pull
+  register: docker_image
+  
+- name: Create/Update the dozzle container
   docker_container:
     name: dozzle
-    image: amir20/dozzle:v8.14.4
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    env:
-      DOZZLE_LEVEL: "trace"
-      DOZZLE_REMOTE_AGENT: "omada-lxc.comprofix.xyz:7007"
+    # env:
+    #   DOZZLE_LEVEL: "trace"
+    #   DOZZLE_REMOTE_AGENT: "omada-lxc.comprofix.xyz:7007"
     labels:
       traefik.enable: "true"
-      traefik.http.routers.dozzle.rule: "Host(`dozzle.comprofix.xyz`)"
+      traefik.http.routers.dozzle.rule: "Host(`devdozzle.comprofix.xyz`)"
       traefik.http.routers.dozzle.entrypoints: "https"
       traefik.http.routers.dozzle.tls: "true"
       traefik.http.services.dozzle.loadbalancer.server.port: "8080"
       traefik.http.services.dozzle.loadbalancer.server.scheme: "http"
+  when: docker_image.changed
+  register: container_dozzle
