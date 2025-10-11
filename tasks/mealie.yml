@@ -4,13 +4,20 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/mealie"
-    - "{{ data_folder }}/mealie/config"
+    - "/data/mealie"
+    - "/data/mealie/config"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image:  ghcr.io/mealie-recipes/mealie
+    tag: v3.3.2
+    source: pull
+  register: docker_image
 
 - name: Create the mealie container
   docker_container:
     name: mealie
-    image: ghcr.io/mealie-recipes/mealie:v3.3.2
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -27,10 +34,12 @@
       BASE_URL: "mealie.comprofix.xyz"
       SMTP_HOST: "{{MAIL_HOST}}"
     volumes:
-      - "{{ data_folder }}/mealie/data/:/app/data"
+      - "/data/mealie/data/:/app/data"
     labels:
       traefik.enable: "true"
       traefik.http.routers.mealie.rule: "Host(`mealie.comprofix.xyz`)"
       traefik.http.routers.mealie.entrypoints: "https"
       traefik.http.routers.mealie.tls: "true"
       traefik.http.services.mealie.loadbalancer.server.port: "9000"
+  when: docker_image.changed
+  register: container_mealie
