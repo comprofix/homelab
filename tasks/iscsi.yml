@@ -9,80 +9,112 @@
     name: parted
     state: present
 
-- name: Discover iSCSI targets
-  command: sudo iscsiadm -m discovery -t sendtargets -p "10.10.10.2"
-  register: iscsi_discovery
-
-- name: Set target_iqn variable based on discovery
-  set_fact:
-    target_iqn: "{{ item.split(' ')[1] }}"
-  loop: "{{ iscsi_discovery.stdout_lines }}"
-  when: item.startswith("10.10.10.2")
-
-- name: Check if iSCSI target is already connected
+- name: Check existing iSCSI sessions
   command: iscsiadm -m session
   register: iscsi_sessions
   changed_when: false
-  failed_when: iscsi_sessions.rc not in [0, 21]  # Allow success if the return code is 0 or 21
+  failed_when: iscsi_sessions.rc not in [0, 21]
 
-- name: Connect to iSCSI target
-  command: sudo iscsiadm -m node -T "{{ target_iqn }}" -p "10.10.10.2" --login
-  when: target_iqn is defined and target_iqn not in iscsi_sessions.stdout
+- name: Discover iSCSI targets for each portal
+  command: iscsiadm -m discovery -t sendtargets -p "{{ item.portal }}"
+  register: iscsi_discovery
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"
+  changed_when: false
 
-- name: Set iSCSI target for automatic login
-  command: sudo iscsiadm -m node -T "{{ target_iqn }}" -p "10.10.10.2" --op update --name node.startup --value automatic
-  when: target_iqn is defined
+- name: Connect to iSCSI targets for this host
+  command: iscsiadm -m node -T "{{ item.iqn }}" -p "{{ item.portal }}" --login
+  loop: "{{ iscsi_targets }}"
+  when: item.iqn not in iscsi_sessions.stdout
+  loop_control:
+    label: "{{ item.iqn }}"
 
-- name: Fail if no target_iqn found
-  fail:
-    msg: "No target IQN found for iSCSI server IP 10.10.10.2"
-  when: target_iqn is not defined
+- name: Set iSCSI targets for automatic login
+  command: iscsiadm -m node -T "{{ item.iqn }}" -p "{{ item.portal }}" --op update --name node.startup --value automatic
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"
 
-- name: List all block devices
-  command: lsblk -o NAME,SIZE,TYPE,MODEL
-  register: lsblk_output
+# --------------------------
+# Wait for the iSCSI device to appear
+# --------------------------
+- name: Wait for iSCSI device to appear
+  wait_for:
+    path: "/dev/disk/by-path/ip-{{ item.portal }}:3260-iscsi-{{ item.iqn }}-lun-0"
+    state: present
+    timeout: 30
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"
 
-- name: Set iSCSI device variable
-  set_fact:
-    iscsi_device: "/dev/{{ item.split()[0] }}"
-  loop: "{{ lsblk_output.stdout_lines }}"
-  when: item.split()[2] == 'disk' and 'iSCSI' in item  # Adjust based on the MODEL you observe
+# --------------------------
+# Check if device is raw
+# --------------------------
+- name: Get block device info for each target
+  command: "blkid /dev/disk/by-path/ip-{{ item.portal }}:3260-iscsi-{{ item.iqn }}-lun-0"
+  register: blkid_output
+  failed_when: false
+  changed_when: false
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"
 
-- name: Fail if no iSCSI device found
-  fail:
-    msg: "No iSCSI device found!"
-  when: iscsi_device is not defined
-
-- name: Create a partition on iSCSI device using parted
+# --------------------------
+# Create partition if device is raw
+# --------------------------
+- name: Create partition if device is raw
   parted:
-    device: "{{ iscsi_device }}"
+    device: "/dev/disk/by-path/ip-{{ item[1].portal }}:3260-iscsi-{{ item[1].iqn }}-lun-0"
     number: 1
     state: present
     part_type: primary
     fs_type: ext4
-    part_start: 0%   # Start at the beginning of the device
-    part_end: 100%    # Use the entire available space
+    part_start: 0%
+    part_end: 100%
+  loop: "{{ blkid_output.results | zip(iscsi_targets) | map('flatten') | list }}"
+  loop_control:
+    label: "{{ item[1].iqn }}"
+  when: item[0].stdout == ""
 
-- name: Create filesystem on new partition
+- name: Create filesystem if partition is raw
   filesystem:
     fstype: ext4
-    dev: "{{ iscsi_device }}1"  # Format the partition
+    dev: "/dev/disk/by-path/ip-{{ item[1].portal }}:3260-iscsi-{{ item[1].iqn }}-lun-0-part1"
+  loop: "{{ blkid_output.results | zip(iscsi_targets) | map('flatten') | list }}"
+  loop_control:
+    label: "{{ item[1].iqn }}"
+  when: item[0].stdout == ""
 
-- name: Create mount point
+- name: Create mount points
   file:
-    path: /data
+    path: "{{ item.mount_point }}"
     state: directory
+    mode: "0777"
+    owner: root
+    group: root
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"
 
-- name: Mount iSCSI target
+- name: Mount iSCSI targets
   mount:
-    path: /data
-    src: "{{ iscsi_device }}1"  # Mount the new partition
+    path: "{{ item.mount_point }}"
+    src: "/dev/disk/by-path/ip-{{ item.portal }}:3260-iscsi-{{ item.iqn }}-lun-0-part1"
     fstype: ext4
     opts: defaults,_netdev
     state: mounted
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"
 
-# - name: Ensure iSCSI target is mounted at boot
-#   lineinfile:
-#     path: /etc/fstab
-#     line: "{{ iscsi_device }}1 /data ext4 _netdev 0 0"
-#     state: present
+- name: Ensure mounted directories are world-writable
+  file:
+    path: "{{ item.mount_point }}"
+    state: directory
+    mode: "0777"
+    owner: root
+    group: root
+  loop: "{{ iscsi_targets }}"
+  loop_control:
+    label: "{{ item.iqn }}"

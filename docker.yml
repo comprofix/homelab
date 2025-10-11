@@ -9,6 +9,11 @@
   pre_tasks:
     - name: Connect iscsi
       import_tasks: tasks/iscsi.yml
+      vars:
+        iscsi_targets:
+          - iqn: iqn.2005-10.org.freenas.ctl:iscsi-docker
+            portal: 10.10.10.2
+            mount_point: /data
       tags: iscsi_connect
 
     - name: Connect NFS
