@@ -8,7 +8,7 @@
     - "/data/gitea/data"
     - "/data/gitea/db"
 
-- name: Pull dozzle image
+- name: Pull docker image
   community.docker.docker_image:
     name: mysql
     tag: 9
@@ -32,7 +32,7 @@
   when: docker_image.changed
   register: container_mysql
 
-- name: Pull dozzle image
+- name: Pull docker image
   community.docker.docker_image:
     name: gitea/gitea
     tag: 1.24
@@ -88,7 +88,7 @@
     modification_time: preserve
   when: configyaml.stat.exists == False
 
-- name: Pull act-runner image
+- name: Pull docker image
   community.docker.docker_image:
     name: gitea/act_runner
     tag: 0.2.13
@@ -121,7 +121,7 @@
   with_items:
     - "/data/opengist"
 
-- name: Pull dozzle image
+- name: Pull docker image
   community.docker.docker_image:
     name: ghcr.io/thomiceli/opengist
     tag: 1.11

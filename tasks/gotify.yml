@@ -4,15 +4,21 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/gotify"
-    - "{{ data_folder }}/gotify/data"
+    - "/data/gotify"
+    - "/data/gotify/data"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    name: mgotify/server
+    tag: 2.7.3
+    source: pull
+  register: docker_image
 
 - name: Create the gotify container
   docker_container:
     name: gotify
-    image: gotify/server:2.7.3
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     volumes:
@@ -24,3 +30,6 @@
       traefik.http.routers.gotify.tls: "true"
       traefik.http.routers.gotify.service: "gotify"
       traefik.http.services.gotify.loadbalancer.server.port: "80"
+  when: docker_image.changed
+  register: container_gotify
+
