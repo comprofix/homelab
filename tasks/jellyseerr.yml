@@ -4,15 +4,21 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/jellyseerr"
-    - "{{ data_folder }}/jellyseerr/config"
-  
+    - "/data/jellyseerr"
+    - "/data/jellyseerr/config"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: fallenbagel/jellyseerr:2.7.3 
+    tag: 2.7.3
+    source: pull
+  register: docker_image
+
 - name: Create the jellyseerr container
   docker_container:
     name: jellyseerr
-    image: fallenbagel/jellyseerr:2.7.3 
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     networks:
       - name: proxy
     env:
@@ -20,10 +26,12 @@
       PGID: "1000"
       TZ: "Australia/Brisbane"
     volumes:
-      - "{{ data_folder }}/jellyseerr/config:/app/config"
+      - "/data/jellyseerr/config:/app/config"
     labels:
       traefik.enable: "true"
       traefik.http.routers.jellyseerr.rule: "Host(`jellyseerr.comprofix.xyz`)"
       traefik.http.routers.jellyseerr.entrypoints: "https"
       traefik.http.routers.jellyseerr.tls: "true"
       traefik.http.services.jellyseerr.loadbalancer.server.port: "5055"
+  when: docker_image.changed
+  register: container_jellyseerr
