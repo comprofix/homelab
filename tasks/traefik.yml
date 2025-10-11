@@ -32,10 +32,17 @@
     group: root # GID Traefik runs as
     mode: "0600"
 
+- name: Pull docker image
+  community.docker.docker_image:
+    image: traefik
+    tag: v3.5
+    source: pull
+  register: docker_image
+
 - name: Create traefik Container
   docker_container:
     name: traefik
-    image: traefik:v3.5
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
     networks:
       - name: "proxy"
@@ -70,3 +77,5 @@
       traefik.http.routers.traefik-secure.tls.domains[1].main: "comprofix.xyz"
       traefik.http.routers.traefik-secure.tls.domains[1].sans: "*.comprofix.xyz"
       traefik.http.routers.traefik-secure.service: "api@internal"
+  when: docker_image.changed
+  register: container_traefik
