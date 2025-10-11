@@ -1,0 +1,12 @@
+---
+- name: Prepare all servers
+  hosts: all
+  become: true
+  pre_tasks:
+    - name: Create directories
+      file:
+        path: "/data"
+        state: directory
+
+    - name: Setup base system
+      import_tasks: tasks/base.yml
