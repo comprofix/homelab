@@ -1,22 +1,24 @@
 ---
-- name: Set Facts
-  set_fact:
-    container_name: 'mariadb'
-
 - name: Create directories
   file:
     path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ data_folder }}/mariadb"
-    - "{{ data_folder }}/mariadb/config"
+    - "/data/mariadb"
+    - "/data/mariadb/config"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: ghcr.io/linuxserver/mariadb
+    tag: 11.4.8
+    source: pull
+  register: docker_image
   
 - name: Create the mariadb container
   docker_container:
     name: "mariadb"
-    image: ghcr.io/linuxserver/mariadb:11.4.8
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
-    recreate: true
     ports:
       - 3306:3306
     env:
@@ -25,5 +27,7 @@
       MYSQL_ROOT_PASSWORD: "{{MYSQL_ROOT_PASSWORD}}"
       TZ: "Australia/Brisbane"
     volumes:
-      - "{{ data_folder }}/mariadb/config:/config"
+      - "/data/mariadb/config:/config"
+  when: docker_image.changed
+  register: container_mariadb
     
