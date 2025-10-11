@@ -4,13 +4,20 @@
     path: "{{ item }}"
     state: directory
   with_items:
-    - "/mnt/nfs/docker/postgres"
-    - "/mnt/nfs/docker/postgres/config"
+    - "/data/postgres"
+    - "/data/postgres/data"
+
+- name: Pull docker image
+  community.docker.docker_image:
+    image: postgres
+    tag: 17.0-alpine
+    source: pull
+  register: docker_image
 
 - name: Create the postgres container
   docker_container:
     name: postgres
-    image: postgres:16-alpine
+    image: "{{ docker_image.image.RepoTags[0] }}"
     restart_policy: unless-stopped
     recreate: true
     ports:
@@ -18,5 +25,7 @@
     env:
       POSTGRES_PASSWORD: "{{POSTGRES_PASSWORD}}"
     volumes:
-      - /mnt/nfs/docker/postgres/db-data:/var/lib/postgresql/data
+      - /data/postgres/data:/var/lib/postgresql/data
+  when: docker_image.changed
+  register: container_postgres
 

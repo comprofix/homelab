@@ -8,14 +8,17 @@
     - name: Deploy traefik website
       import_tasks: tasks/traefik.yml
 
-    # - name: Deploy Vaultwarden
-    #   import_tasks: tasks/vaultwarden.yml
-    #   tags: vaultwarden_install
+    - name: Deploy postgres website
+      import_tasks: tasks/postgres.yml
 
-    # - name: Deploy gitea
-    #   import_tasks: tasks/gitea.yml
-    #   tags: gitea_install
+    - name: Deploy Vaultwarden
+      import_tasks: tasks/vaultwarden.yml
+      tags: vaultwarden_install
 
-    # - name: Gotify
-    #   import_tasks: tasks/gotify.yml
-    #   tags: gotify_install
+    - name: Deploy gitea
+      import_tasks: tasks/gitea.yml
+      tags: gitea_install
+
+    - name: Gotify
+      import_tasks: tasks/gotify.yml
+      tags: gotify_install
