@@ -66,54 +66,6 @@
   when: docker_image.changed
   register: container_gitea
 
-- name: Create folders
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "/data/gitea-runner"
-    - "/data/gitea-runner/config"
-
-- name: Check that config.yaml exists
-  stat:
-    path: "/data/gitea-runner/config/config.yaml"
-  register: configyaml
-
-- name: Create config.yaml file
-  file:
-    path: "/data/gitea-runner/config/config.yaml"
-    state: touch
-    mode: "0600"
-    access_time: preserve
-    modification_time: preserve
-  when: configyaml.stat.exists == False
-
-- name: Pull docker image
-  community.docker.docker_image:
-    name: gitea/act_runner
-    tag: 0.2.13
-    source: pull
-  register: docker_image
-
-- name: Create the gitea-runner container
-  docker_container:
-    name: gitea-runner
-    image: "{{ docker_image.image.RepoTags[0] }}"
-    restart_policy: unless-stopped
-    volumes:
-      - "/etc/resolv.conf:/etc/resolv.conf:ro"
-      - /var/run/docker.sock:/var/run/docker.sock
-      - "/data/gitea-runner/config/config.yaml:/config.yaml"
-      - "/etc/hosts:/etc/hosts:ro"
-    env:
-      CONFIG_FILE: "/config.yaml"
-      GITEA_INSTANCE_URL: "https://git.comprofix.com"
-      GITEA_RUNNER_REGISTRATION_TOKEN: "{{ GITEA_RUNNER_TOKEN }}"
-      GITEA_RUNNER_NAME: "gtar-runner"
-      GITEA_RUNNER_LABELS: "alpine-latest:docker://git.comprofix.com/mmckinnon/alpine-runner:latest,ubuntu-latest:docker://node:22-trixie,gtar-latest:docker://git.comprofix.com/mmckinnon/debian-latest:latest"
-  when: docker_image.changed
-  register: container_gitea_runner
-
 - name: Create directories
   file:
     path: "{{ item }}"
