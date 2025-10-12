@@ -27,11 +27,7 @@
   tasks:
     - name: Deploy traefik website
       import_tasks: tasks/traefik.yml
-      
-    - name: Deploy comprofix.com website
-      import_tasks: tasks/comprofix.com.yml
-      tags: comprofix_install
-
+    
     - name: Deploy iDrac Fan Controller
       import_tasks: tasks/idrac.yml
       tags: idrac_install
