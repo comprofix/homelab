@@ -31,6 +31,9 @@
     - name: Deploy iDrac Fan Controller
       import_tasks: tasks/idrac.yml
       tags: idrac_install
+    
+    - name: Deploy Planka
+      import_tasks: tasks/planka.yml
 
     - name: Deploy MariaDB
       import_tasks: tasks/mariadb.yml
