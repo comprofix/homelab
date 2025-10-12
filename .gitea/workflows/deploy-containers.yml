@@ -26,4 +26,5 @@ jobs:
           echo "StrictHostKeyChecking no" >> ~/.ssh/config
           echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/.vault_password.txt
           echo "nameserver 10.10.10.1" > /etc/resolv.conf
-          ./.gitea/workflows/deploy.sh "${{ github.event.before }}" "${{ github.sha }}"
+          ansible-galaxy install -r requirements.yml
+          ansible-playbook main.yml --vault-password-file ~/.vault_password.txt
