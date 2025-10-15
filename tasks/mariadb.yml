@@ -6,18 +6,11 @@
   with_items:
     - "/data/mariadb"
     - "/data/mariadb/config"
-
-- name: Pull docker image
-  community.docker.docker_image:
-    name: ghcr.io/linuxserver/mariadb
-    tag: 11.4.8
-    source: pull
-  register: docker_image
-  
+ 
 - name: Create the mariadb container
   docker_container:
     name: "mariadb"
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: ghcr.io/linuxserver/mariadb:11.4.8
     restart_policy: unless-stopped
     ports:
       - 3306:3306

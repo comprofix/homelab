@@ -12,17 +12,10 @@
   docker_network:
     name: planka
 
-- name: Pull postgres image
-  community.docker.docker_image:
-    name: postgres
-    tag: "16-alpine"
-    source: pull
-  register: docker_image
-
 - name: Create/update the postgres database
   docker_container:
     name: postgres-planka
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: postgres:16-alpine
     restart_policy: unless-stopped
     env:
       POSTGRES_DB: planka
@@ -34,20 +27,13 @@
       - name: planka
     volumes:
       - "/data/planka/postgres:/var/lib/postgresql/data"
-  when: docker_image.changed
-  register: container_postgres_planka
-
-- name: Pull planka image
-  community.docker.docker_image:
-    name: ghcr.io/plankanban/planka
-    tag: "2.0.0-rc.4"
-    source: pull
-  register: docker_image
+    pull: true
+    recreate: true
 
 - name: Create/Update the planka container
   docker_container:
     name: planka
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: ghcr.io/plankanban/planka:2.0.0-rc.4
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -77,7 +63,7 @@
       traefik.http.services.planka.loadbalancer.server.port: "1337"
       traefik.http.services.planka.loadbalancer.server.scheme: "http"
       traefik.docker.network: "proxy"
-  when: docker_image.changed
-  register: container_planka
+    pull: true
+    recreate: true
 
   

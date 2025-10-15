@@ -8,17 +8,10 @@
     - "/data/gitea/data"
     - "/data/gitea/db"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: mysql
-    tag: 9
-    source: pull
-  register: docker_image
-
 - name: Create MySQL DB for Gitea
   docker_container:
     name: gitea_db
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: mysql:9
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -29,20 +22,13 @@
       MYSQL_DATABASE: gitea
     volumes:
       - "/data/gitea/db:/var/lib/mysql"
-  when: docker_image.changed
-  register: container_mysql
-
-- name: Pull docker image
-  community.docker.docker_image:
-    name: gitea/gitea
-    tag: 1.24
-    source: pull
-  register: docker_image
+    pull: true
+    recreate: true
 
 - name: Create the Gitea container
   docker_container:
     name: gitea
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: gitea/gitea:1.24
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -63,8 +49,8 @@
       traefik.http.routers.gitea.tls: "true"
       traefik.http.routers.gitea.service: "gitea"
       traefik.http.services.gitea.loadbalancer.server.port: "3000"
-  when: docker_image.changed
-  register: container_gitea
+    pull: true
+    recreate: true
 
 - name: Create directories
   file:
@@ -73,17 +59,10 @@
   with_items:
     - "/data/opengist"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: ghcr.io/thomiceli/opengist
-    tag: 1.11
-    source: pull
-  register: docker_image
-
 - name: Create the opengist container
   docker_container:
     name: opengist
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: ghcr.io/thomiceli/opengist:1.11
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -104,5 +83,6 @@
       traefik.http.routers.opengist.tls: "true"
       traefik.http.routers.opengist.service: "opengist"
       traefik.http.services.opengist.loadbalancer.server.port: "6157"
-  when: docker_image.changed
-  register: container_opengist
+    pull: true
+    recreate: true
+    

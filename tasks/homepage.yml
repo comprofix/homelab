@@ -13,18 +13,10 @@
     dest: /data/dashboard-icons
     update: yes
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: ghcr.io/gethomepage/homepage
-    tag: v1.5.0
-    source: pull
-  register: docker_image
-
-
 - name: Create the homepage container
   docker_container:
     name: homepage
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: ghcr.io/gethomepage/homepage:v1.5.0
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -42,5 +34,6 @@
       traefik.http.routers.homepage.tls: "true"
       traefik.http.routers.homepage.service: "homepage"
       traefik.http.services.homepage.loadbalancer.server.port: "3000"
-  when: docker_image.changed
-  register: container_homepage
+    pull: true
+    recreate: true
+    

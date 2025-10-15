@@ -7,17 +7,10 @@
     - "/data/postgres"
     - "/data/postgres/data"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: postgres
-    tag: 17.0-alpine
-    source: pull
-  register: docker_image
-
 - name: Create the postgres container
   docker_container:
     name: postgres
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: postgres:17.0-alpine
     restart_policy: unless-stopped
     ports:
       - 5432:5432
@@ -25,6 +18,6 @@
       POSTGRES_PASSWORD: "{{POSTGRES_PASSWORD}}"
     volumes:
       - /data/postgres/data:/var/lib/postgresql/data
-  when: docker_image.changed
-  register: container_postgres
+    pull: true
+    recreate: true
 

@@ -7,17 +7,10 @@
     - "/data/gotify"
     - "/data/gotify/data"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: gotify/server
-    tag: 2.7.3
-    source: pull
-  register: docker_image
-
 - name: Create the gotify container
   docker_container:
     name: gotify
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: gotify/server:2.7.3
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -30,6 +23,6 @@
       traefik.http.routers.gotify.tls: "true"
       traefik.http.routers.gotify.service: "gotify"
       traefik.http.services.gotify.loadbalancer.server.port: "80"
-  when: docker_image.changed
-  register: container_gotify
-
+    pull: true
+    recreate: true
+    

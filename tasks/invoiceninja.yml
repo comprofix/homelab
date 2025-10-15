@@ -56,17 +56,10 @@
       UPDATE_SECRET=secret
       SENTRY_LARAVEL_DSN=https://32f01ea994744fa08a0f688769cef78a@sentry.invoicing.co/ 
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: invoiceninja/invoiceninja
-    tag: 5
-    source: pull
-  register: docker_image
-
 - name: Create the invoiceninja-app container
   docker_container:
     name: invoiceninja-app
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: invoiceninja/invoiceninja:5
     env_file: "/data/invoiceninja/stack.env"
     restart_policy: unless-stopped
     networks:
@@ -75,20 +68,13 @@
       - "/data/invoiceninja/config/hosts:/etc/hosts"
       - "/data/invoiceninja/docker/app/public:/var/www/app/public"
       - "/data/invoiceninja/docker/app/storage:/var/www/app/storage"
-  when: docker_image.changed
-  register: container_inv_app
-
-- name: Pull docker image
-  community.docker.docker_image:
-    name: nginx
-    tag: 1.29.2
-    source: pull
-  register: docker_image
+    pull: true
+    recreate: true
 
 - name: Create the invoiceninja-nginx container
   docker_container:
     name: invoiceninja-nginx
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: nginx:1.29.2
     env_file: "/data/invoiceninja/stack.env"
     restart_policy: unless-stopped
     networks:
@@ -104,8 +90,9 @@
       traefik.http.routers.invoiceninja.tls: "true"
       traefik.http.services.invoiceninja.loadbalancer.server.port: "80"
       traefik.http.services.invoiceninja.loadbalancer.server.scheme: "http"
-  when: docker_image.changed
-  register: container_inv_nginx
+    pull: true
+    recreate: true
+
   
 
       

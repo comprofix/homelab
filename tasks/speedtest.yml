@@ -8,17 +8,10 @@
     - "/data/speedtest/config"
     - "/data/speedtest/web"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: lscr.io/linuxserver/speedtest-tracker
-    tag: 1.6.8
-    source: pull
-  register: docker_image
-
 - name: Create the speedtest container
   docker_container:
     name: speedtest
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: lscr.io/linuxserver/speedtest-tracker:1.6.8
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -45,5 +38,6 @@
       traefik.http.routers.speedtest.tls: "true"
       traefik.http.services.speedtest.loadbalancer.server.port: "80"
       traefik.http.services.speedtest.loadbalancer.server.scheme: "http"
-  when: docker_image.changed
-  register: container_speedtest
+    pull: true
+    recreate: true
+    

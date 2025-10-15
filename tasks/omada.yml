@@ -8,17 +8,10 @@
     - "/data/omada/data"
     - "/data/omada/logs"
 
-- name: Pull omada image
-  community.docker.docker_image:
-    name: mbentley/omada-controller
-    tag: "5.15"
-    source: pull
-  register: docker_image
-
 - name: Create/Update the omada-controller container
   docker_container:
     name: omada
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: mbentley/omada-controller:5.15
     restart_policy: unless-stopped
     network_mode: host
     volumes:
@@ -28,5 +21,6 @@
       PUID: "1000"
       PGID: "1000"
       TZ: "Australia/Brisbane"
-  when: docker_image.changed
-  register: container_omada
+    pull: true
+    recreate: true
+    

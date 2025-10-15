@@ -6,18 +6,11 @@
   with_items:
     - "/data/sabnzbd"
     - "/data/sabnzbd/config"
-
-- name: Pull docker image
-  community.docker.docker_image:
-    name: linuxserver/sabnzbd
-    tag: 4.5.3
-    source: pull
-  register: docker_image
   
 - name: Create the sabnzbd container
   docker_container:
     name: sabnzbd
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: linuxserver/sabnzbd:4.5.3
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -36,5 +29,6 @@
       traefik.http.routers.sabnzbd.entrypoints: "https"
       traefik.http.routers.sabnzbd.tls: "true"
       traefik.http.services.sabnzbd.loadbalancer.server.port: "8080"
-  when: docker_image.changed
-  register: container_sabnzbd
+    pull: true
+    recreate: true
+    

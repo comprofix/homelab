@@ -7,17 +7,10 @@
     - "/data/jellyseerr"
     - "/data/jellyseerr/config"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: fallenbagel/jellyseerr:2.7.3 
-    tag: 2.7.3
-    source: pull
-  register: docker_image
-
 - name: Create the jellyseerr container
   docker_container:
     name: jellyseerr
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: fallenbagel/jellyseerr:2.7.3 
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -33,5 +26,6 @@
       traefik.http.routers.jellyseerr.entrypoints: "https"
       traefik.http.routers.jellyseerr.tls: "true"
       traefik.http.services.jellyseerr.loadbalancer.server.port: "5055"
-  when: docker_image.changed
-  register: container_jellyseerr
+    pull: true
+    recreate: true
+    

@@ -6,17 +6,10 @@
   with_items:
     - "/data/mediawiki"
 
-- name: Pull docker image
-  community.docker.docker_image:
-    name: mediawiki
-    tag: 1.44.2
-    source: pull
-  register: docker_image
-
 - name: Create the wiki container
   docker_container:
     name: mediawiki
-    image: "{{ docker_image.image.RepoTags[0] }}"
+    image: mediawiki:1.44.2
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -33,5 +26,5 @@
       traefik.http.routers.wiki.entrypoints: "https"
       traefik.http.routers.wiki.tls: "true"
       traefik.http.services.wiki.loadbalancer.server.port: "80"
-  when: docker_image.changed
-  register: container_mediawiki
+    pull: true
+    recreate: true
