@@ -10,7 +10,7 @@
 - name: Create the radarr container
   docker_container:
     name: radarr
-    image: linuxserver/radarr:5.27.5
+    image: linuxserver/radarr:5.28.0
     restart_policy: unless-stopped
     networks:
       - name: proxy
