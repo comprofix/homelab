@@ -44,7 +44,7 @@
 - name: Create the vaultwarden container
   docker_container:
     name: vaultwardenbackup
-    image: ttionya/vaultwarden-backup:1.25.2
+    image: ttionya/vaultwarden-backup:1.25.3
     restart_policy: unless-stopped
     env:
       PUID: "1000"
