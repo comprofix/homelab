@@ -10,7 +10,7 @@
 - name: Create the sabnzbd container
   docker_container:
     name: sabnzbd
-    image: linuxserver/sabnzbd:4.5.4
+    image: linuxserver/sabnzbd:4.5.5
     restart_policy: unless-stopped
     networks:
       - name: proxy
