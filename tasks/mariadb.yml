@@ -21,6 +21,5 @@
       TZ: "Australia/Brisbane"
     volumes:
       - "/data/mariadb/config:/config"
-  when: docker_image.changed
-  register: container_mariadb
+
     
