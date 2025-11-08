@@ -26,7 +26,11 @@
 - name: Create the Gitea container
   docker_container:
     name: gitea
+<<<<<<< HEAD
     image: gitea/gitea:1.25.1
+=======
+    image: gitea/gitea:1.25
+>>>>>>> 6f82042 (chore(deps): update gitea/gitea docker tag to v1.25)
     restart_policy: unless-stopped
     networks:
       - name: proxy
