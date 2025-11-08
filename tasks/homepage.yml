@@ -16,7 +16,7 @@
 - name: Create the homepage container
   docker_container:
     name: homepage
-    image: ghcr.io/gethomepage/homepage:v1.5.0
+    image: ghcr.io/gethomepage/homepage:v1.6.1
     restart_policy: unless-stopped
     networks:
       - name: proxy
