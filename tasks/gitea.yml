@@ -22,13 +22,11 @@
       MYSQL_DATABASE: gitea
     volumes:
       - "/data/gitea/db:/var/lib/mysql"
-    pull: true
-    recreate: true
 
 - name: Create the Gitea container
   docker_container:
     name: gitea
-    image: gitea/gitea:1.24
+    image: gitea/gitea:1.25.1
     restart_policy: unless-stopped
     networks:
       - name: proxy
@@ -49,8 +47,6 @@
       traefik.http.routers.gitea.tls: "true"
       traefik.http.routers.gitea.service: "gitea"
       traefik.http.services.gitea.loadbalancer.server.port: "3000"
-    pull: true
-    recreate: true
 
 - name: Create directories
   file:
@@ -83,6 +79,5 @@
       traefik.http.routers.opengist.tls: "true"
       traefik.http.routers.opengist.service: "opengist"
       traefik.http.services.opengist.loadbalancer.server.port: "6157"
-    pull: true
-    recreate: true
+    
     
